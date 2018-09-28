@@ -132,23 +132,7 @@ int main(int argc, char *argv[])
         exception("ERROR writing to socket");
     }
     close(newsockfd);
-         
-
-    // // read client message into buffer and print to stdout
-    // bzero(buffer,256);
-    // success = read(newsockfd,buffer,255);
-    // if (success < 0) {
-    //     exception("ERROR reading from socket.\n");
-    // }
-    // printf("Here is the message: %s.\n", buffer);
-
-    // // write acknowledgement back to client and close connection
-    // success = write(newsockfd, "I got your message.\n", 18);
-    // if (success < 0) {
-    //     exception("ERROR writing to socket.\n");
-    // }
     close(udp_sockfd);
     close(tcp_sockfd);
-    //close(newsockfd);
     return 0; 
 }

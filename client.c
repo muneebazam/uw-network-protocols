@@ -31,7 +31,7 @@ int main(int argc, char *argv[])
     int buffer_len = 256;
     char buffer[buffer_len];
     char *server_address;
-    char *req_code_str;
+    char req_code_str[256];
     socklen_t server_len;
     char *msg;
 
@@ -112,15 +112,14 @@ int main(int argc, char *argv[])
         exception("ERROR opening socket");
     }
     bzero((char *) &serv_addr_tcp, sizeof(serv_addr_tcp));
-
     serv_addr_tcp.sin_family = AF_INET;
-
     bcopy((char *)server->h_addr, 
          (char *)&serv_addr_tcp.sin_addr.s_addr,
          server->h_length);
     serv_addr_tcp.sin_port = htons(trans_port);
-    if (connect(sockfd_tcp,(struct sockaddr *) &serv_addr_tcp,sizeof(serv_addr_tcp)) < 0) 
+    if (connect(sockfd_tcp, (struct sockaddr *) &serv_addr_tcp, sizeof(serv_addr_tcp)) < 0) {
         exception("ERROR connecting");
+    }
     success = write(sockfd_tcp, msg, strlen(msg));
     if (success < 0) 
          exception("ERROR writing to socket");
@@ -131,22 +130,5 @@ int main(int argc, char *argv[])
     printf("%s\n",buffer);
     close(sockfd_tcp);
 
-
-    // // get a message from stdin and send it to server over socket
-    // printf("Please enter the message: ");
-    // bzero(buffer,256);
-    // fgets(buffer,255,stdin);
-    // success = write(sockfd, msg, strlen(msg));
-    // if (success < 0) {
-    //     exception("ERROR writing to socket.\n");
-    // }
-
-    // // get response from server and print it out
-    // bzero(buffer,256);
-    // success = read(sockfd, buffer, 255);
-    // if (success < 0) {
-    //     exception("ERROR reading from socket");
-    // }
-    // printf("Response from server: %s\n", buffer);
     return 0;
 }
