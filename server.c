@@ -66,9 +66,12 @@ int main(int argc, char *argv[])
     listen(sockfd, 5);
     client_len = sizeof(cli_addr);
     //try to receive some data, this is a blocking call
-    if ((recv_len = recvfrom(sockfd, buffer, buffer_len, 0, (struct sockaddr *) &cli_addr, &client_len)) < 0) {
-        exception("recvfrom()");
-    }
+    do {
+        if ((recv_len = recvfrom(sockfd, buffer, buffer_len, 0, (struct sockaddr *) &cli_addr, &client_len)) < 0) {
+           exception("recvfrom()");
+        }
+    } while (atoi(buffer) != req_code);
+    
     //print details of the data received
     printf("Data: %s\n" , buffer);
          
@@ -77,19 +80,19 @@ int main(int argc, char *argv[])
         exception("sendto()");
     }
 
-    // read client message into buffer and print to stdout
-    bzero(buffer,256);
-    success = read(newsockfd,buffer,255);
-    if (success < 0) {
-        exception("ERROR reading from socket.\n");
-    }
-    printf("Here is the message: %s.\n", buffer);
+    // // read client message into buffer and print to stdout
+    // bzero(buffer,256);
+    // success = read(newsockfd,buffer,255);
+    // if (success < 0) {
+    //     exception("ERROR reading from socket.\n");
+    // }
+    // printf("Here is the message: %s.\n", buffer);
 
-    // write acknowledgement back to client and close connection
-    success = write(newsockfd, "I got your message.\n", 18);
-    if (success < 0) {
-        exception("ERROR writing to socket.\n");
-    }
+    // // write acknowledgement back to client and close connection
+    // success = write(newsockfd, "I got your message.\n", 18);
+    // if (success < 0) {
+    //     exception("ERROR writing to socket.\n");
+    // }
     close(newsockfd);
     close(sockfd);
     return 0; 

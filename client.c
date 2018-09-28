@@ -29,6 +29,7 @@ int main(int argc, char *argv[])
     int buffer_len = 256;
     char buffer[buffer_len];
     char *server_address;
+    char *req_code_str;
     socklen_t server_len;
     char *msg;
 
@@ -42,6 +43,7 @@ int main(int argc, char *argv[])
         portno = atoi(argv[2]);
         req_code = atoi(argv[3]);
         msg = argv[4];
+        sprintf(req_code_str, "%d", req_code); 
     }
 
     // test to see if command line arguments passed correctly
@@ -70,14 +72,14 @@ int main(int argc, char *argv[])
          server->h_length);
     serv_addr.sin_port = htons(portno);
 
-    // connect to server 
-    if (connect(sockfd,(struct sockaddr *) &serv_addr,sizeof(serv_addr)) < 0) { 
-        exception("ERROR connecting.\n");
-    }
+    // // connect to server 
+    // if (connect(sockfd,(struct sockaddr *) &serv_addr,sizeof(serv_addr)) < 0) { 
+    //     exception("ERROR connecting.\n");
+    // }
 
     server_len = sizeof(serv_addr);
-    //send the message
-    if (sendto(sockfd, msg, strlen(msg), 0, (struct sockaddr *) &serv_addr, server_len) < 0) {
+    //send the messages
+    if (sendto(sockfd, req_code_str, strlen(req_code_str), 0, (struct sockaddr *) &serv_addr, server_len) < 0) {
         exception("Error sending message");
     }
     bzero(buffer,256);
@@ -86,6 +88,9 @@ int main(int argc, char *argv[])
     if (recvfrom(sockfd, buffer, buffer_len, 0, (struct sockaddr *) &serv_addr, &server_len) < 0) {
         exception("Error receiving message");
     }
+
+    //print details of the data received
+    printf("Data: %s\n" , buffer);    
 
     // // get a message from stdin and send it to server over socket
     // printf("Please enter the message: ");
