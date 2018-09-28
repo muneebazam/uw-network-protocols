@@ -26,8 +26,10 @@ int main(int argc, char *argv[])
     int required_args = 5;
     struct sockaddr_in serv_addr;
     struct hostent *server;
-    char buffer[256];
+    int buffer_len = 256;
+    char buffer[buffer_len];
     char *server_address;
+    socklen_t server_len;
     char *msg;
 
     // check if correct arguments are passed and instantiate
@@ -50,7 +52,7 @@ int main(int argc, char *argv[])
 
     // continously try to open a UDP socket connection
     do {
-        sockfd = socket(AF_INET, SOCK_DGRAM, 0);
+        sockfd = socket(AF_INET, SOCK_DGRAM, IPPROTO_UDP);
     } while (sockfd < 0);
 
     // configure server hostname
@@ -73,22 +75,34 @@ int main(int argc, char *argv[])
         exception("ERROR connecting.\n");
     }
 
-    // get a message from stdin and send it to server over socket
-    printf("Please enter the message: ");
+    server_len = sizeof(serv_addr);
+    //send the message
+    if (sendto(sockfd, msg, strlen(msg), 0, (struct sockaddr *) &serv_addr, server_len) < 0) {
+        exception("sendto()");
+    }
     bzero(buffer,256);
-    fgets(buffer,255,stdin);
-    success = write(sockfd,msg,strlen(msg));
-    if (success < 0) {
-        exception("ERROR writing to socket.\n");
+
+    //try to receive some data, this is a blocking call
+    if (recvfrom(sockfd, buffer, buffer_len, 0, (struct sockaddr *) &serv_addr, &server_len) < 0) {
+        exception("recvfrom()");
     }
 
-    // get response from server and print it out
-    bzero(buffer,256);
-    success = read(sockfd, buffer, 255);
-    if (success < 0) {
-        exception("ERROR reading from socket");
-    }
-    printf("Response from server: %s\n", buffer);
+    // // get a message from stdin and send it to server over socket
+    // printf("Please enter the message: ");
+    // bzero(buffer,256);
+    // fgets(buffer,255,stdin);
+    // success = write(sockfd, msg, strlen(msg));
+    // if (success < 0) {
+    //     exception("ERROR writing to socket.\n");
+    // }
+
+    // // get response from server and print it out
+    // bzero(buffer,256);
+    // success = read(sockfd, buffer, 255);
+    // if (success < 0) {
+    //     exception("ERROR reading from socket");
+    // }
+    // printf("Response from server: %s\n", buffer);
     close(sockfd);
     return 0;
 }
