@@ -80,7 +80,7 @@ int main(int argc, char *argv[])
         printf("Data: %s\n" , buffer);
     } while (atoi(buffer) != req_code);
 
-    printf("we made it bro");
+    printf("we made it bro the req code is: %d\n", req_code);
     
     // create new TCP socket 
     tcp_sockfd = socket(AF_INET, SOCK_STREAM, 0);
