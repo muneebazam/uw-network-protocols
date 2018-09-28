@@ -97,7 +97,7 @@ int main(int argc, char *argv[])
     } while (bind_socket < 0);
     //sprintf(r_port_str, "%d", portno);
 
-     printf("we made it bro");
+    printf("we made it bro, the req code is STILLL: %d\n", req_code);
 
     //now reply with the <r_port> value
     if (sendto(udp_sockfd, r_port_str, strlen(r_port_str), 0, (struct sockaddr*) &cli_addr, client_len) < 0) {
