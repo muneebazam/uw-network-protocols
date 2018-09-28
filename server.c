@@ -112,21 +112,26 @@ int main(int argc, char *argv[])
         exception("sendto()");
     }
 
-    //  // wait off for this just deal with creation before udp reply
-    // listen(tcp_sockfd,5);
-    // client_len_tcp = sizeof(cli_addr_tcp);
-    //  newsockfd = accept(tcp_sockfd, 
-    //              (struct sockaddr *) &cli_addr_tcp, 
-    //              &client_len_tcp);
-    //  if (newsockfd < 0) 
-    //       error("ERROR on accept");
-    //  bzero(buffer,256);
-    //  success = read(newsockfd,buffer,255);
-    //  if (success < 0) error("ERROR reading from socket");
-    //  printf("Here is the message: %s\n", buffer);
-    //  success = write(newsockfd,"I got your message",18);
-    //  if (success < 0) error("ERROR writing to socket");
-    //  close(newsockfd);
+     // wait off for this just deal with creation before udp reply
+    listen(tcp_sockfd, 5);
+    client_len_tcp = sizeof(cli_addr_tcp);
+    newsockfd = accept(tcp_sockfd, 
+                (struct sockaddr *) &cli_addr_tcp, 
+                &client_len_tcp);
+     if (newsockfd < 0) {
+        exception("ERROR on accept");
+     }
+    bzero(buffer,256);
+    success = read(newsockfd,buffer,255);
+    if (success < 0) {
+        exception("ERROR reading from socket");
+    }
+    printf("Here is the message: %s\n", buffer);
+    success = write(newsockfd, "I got your message", 18);
+    if (success < 0) {
+        exception("ERROR writing to socket");
+    }
+    close(newsockfd);
          
 
     // // read client message into buffer and print to stdout
