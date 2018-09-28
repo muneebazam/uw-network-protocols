@@ -112,7 +112,7 @@ int main(int argc, char *argv[])
     if (sendto(udp_sockfd, confirmation, strlen(confirmation), 0, (struct sockaddr*) &cli_addr, client_len) < 0) {
         exception("sendto()");
     }
-
+    close(udp_sockfd);
      // wait off for this just deal with creation before udp reply
     client_len_tcp = sizeof(cli_addr_tcp);
     newsockfd = accept(tcp_sockfd, 
@@ -132,7 +132,6 @@ int main(int argc, char *argv[])
         exception("ERROR writing to socket");
     }
     close(newsockfd);
-    close(udp_sockfd);
     close(tcp_sockfd);
     return 0; 
 }
