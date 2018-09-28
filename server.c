@@ -104,7 +104,7 @@ int main(int argc, char *argv[])
         exception("sendto()");
     }
 
- printf("we made it bro");
+    printf("we made it bro oNCE AGAIN ITS: %d\n", req_code);
 
     //  // wait off for this just deal with creation before udp reply
     // listen(tcp_sockfd,5);
