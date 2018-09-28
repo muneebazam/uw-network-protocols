@@ -91,11 +91,11 @@ int main(int argc, char *argv[])
     serv_addr_tcp.sin_family = AF_INET;
     serv_addr_tcp.sin_addr.s_addr = INADDR_ANY;
     do {
-       portno += 1;
+       portno += 2;
        serv_addr.sin_port = htons(portno);
       bind_socket = bind(tcp_sockfd, (struct sockaddr *) &serv_addr_tcp, sizeof(serv_addr_tcp));
     } while (bind_socket < 0);
-    //sprintf(r_port_str, "%d", portno);
+    sprintf(r_port_str, "%d", portno);
 
     printf("we made it bro, the req code is STILLL: %d\n", req_code);
 
