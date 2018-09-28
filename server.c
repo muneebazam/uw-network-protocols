@@ -107,13 +107,7 @@ int main(int argc, char *argv[])
     printf("got the confirmation from client.\n");
     listen(tcp_sockfd, 5);
 
-    char confirmation[] = "ok\n";
-    //now reply with ok
-    if (sendto(udp_sockfd, confirmation, strlen(confirmation), 0, (struct sockaddr*) &cli_addr, client_len) < 0) {
-        exception("sendto()");
-    }
-    close(udp_sockfd);
-     // wait off for this just deal with creation before udp reply
+      // wait off for this just deal with creation before udp reply
     client_len_tcp = sizeof(cli_addr_tcp);
     newsockfd = accept(tcp_sockfd, 
                 (struct sockaddr *) &cli_addr_tcp, 
@@ -121,6 +115,21 @@ int main(int argc, char *argv[])
      if (newsockfd < 0) {
         exception("ERROR on accept");
      }
+
+    char confirmation[] = "ok\n";
+    //now reply with ok
+    if (sendto(udp_sockfd, confirmation, strlen(confirmation), 0, (struct sockaddr*) &cli_addr, client_len) < 0) {
+        exception("sendto()");
+    }
+    close(udp_sockfd);
+     // wait off for this just deal with creation before udp reply
+    // client_len_tcp = sizeof(cli_addr_tcp);
+    // newsockfd = accept(tcp_sockfd, 
+    //             (struct sockaddr *) &cli_addr_tcp, 
+    //             &client_len_tcp);
+    //  if (newsockfd < 0) {
+    //     exception("ERROR on accept");
+    //  }
     bzero(buffer,256);
     success = read(newsockfd,buffer,255);
     if (success < 0) {

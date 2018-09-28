@@ -117,7 +117,7 @@ int main(int argc, char *argv[])
          (char *)&serv_addr_tcp.sin_addr.s_addr,
          server->h_length);
     printf("The target conncection port is: %d\n", trans_port);
-    serv_addr_tcp.sin_port = htons(5002);
+    serv_addr_tcp.sin_port = htons(trans_port);
     if (connect(sockfd_tcp, (struct sockaddr *) &serv_addr_tcp, sizeof(serv_addr_tcp)) < 0) {
         exception("ERROR connecting");
     }
