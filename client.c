@@ -1,3 +1,4 @@
+/* A simple client in the internet domain connecting to server via UDP */
 #include <stdio.h>
 #include <stdlib.h>
 #include <unistd.h>
@@ -7,51 +8,87 @@
 #include <netinet/in.h>
 #include <netdb.h> 
 
-void error(const char *msg)
+// prints the appropriate error message
+void exception(const char *msg)
 {
     perror(msg);
-    exit(0);
+    exit(1);
 }
 
+// client application main
 int main(int argc, char *argv[])
 {
-    int sockfd, portno, n;
+    // declare neccesary structs and variables
+    int sockfd;
+    int portno;
+    int req_code;
+    int success;
+    int required_args = 4;
     struct sockaddr_in serv_addr;
     struct hostent *server;
-
     char buffer[256];
-    if (argc < 3) {
-       fprintf(stderr,"usage %s hostname port\n", argv[0]);
-       exit(0);
+    char *server_address;
+    char *msg;
+
+    // check if correct arguments are passed and instantiate
+    if (argc != required_args) {
+        fprintf(stderr, "ERROR invalid number of arguments.\n");
+        fprintf(stderr, "USAGE: ./client.sh <server address> <n_port> <req_code> <msg>\n");
+        exit(1);
+    } else {
+        server_address = argv[1];
+        portno = atoi(argv[2]);
+        req_code = atoi(argv[3]);
+        msg = argv[4];
     }
-    portno = atoi(argv[2]);
-    sockfd = socket(AF_INET, SOCK_STREAM, 0);
-    if (sockfd < 0) 
-        error("ERROR opening socket");
+
+    // test to see if command line arguments passed correctly
+    printf("The server_address is %s\n", server_address);
+    printf("The n_port is %d\n", portno);
+    printf("the req_code is %d\n", req_code);
+    printf("The msg is %s\n", msg);
+
+    // continously try to open a UDP socket connection
+    do {
+        sockfd = socket(AF_INET, SOCK_DGRAM, 0);
+    } while (sockfd < 0);
+
+    // configure server hostname
     server = gethostbyname(argv[1]);
     if (server == NULL) {
-        fprintf(stderr,"ERROR, no such host\n");
-        exit(0);
+        fprintf(stderr,"ERROR, no such host.\n");
+        exit(1);
     }
+
+    // socket configuration
     bzero((char *) &serv_addr, sizeof(serv_addr));
     serv_addr.sin_family = AF_INET;
     bcopy((char *)server->h_addr, 
          (char *)&serv_addr.sin_addr.s_addr,
          server->h_length);
     serv_addr.sin_port = htons(portno);
-    if (connect(sockfd,(struct sockaddr *) &serv_addr,sizeof(serv_addr)) < 0) 
-        error("ERROR connecting");
+
+    // connect to server 
+    if (connect(sockfd,(struct sockaddr *) &serv_addr,sizeof(serv_addr)) < 0) { 
+        exception("ERROR connecting.\n");
+    }
+
+    // get a message from stdin and send it to server over socket
     printf("Please enter the message: ");
     bzero(buffer,256);
     fgets(buffer,255,stdin);
-    n = write(sockfd,buffer,strlen(buffer));
-    if (n < 0) 
-         error("ERROR writing to socket");
+    success = write(sockfd,msg,strlen(msg));
+    if (success < 0) {
+        exception("ERROR writing to socket.\n");
+    }
+
+    // get response from server and print it out
     bzero(buffer,256);
-    n = read(sockfd,buffer,255);
-    if (n < 0) 
-         error("ERROR reading from socket");
-    printf("%s\n",buffer);
+    success = read(sockfd, buffer, 255);
+    if (success < 0) {
+        exception("ERROR reading from socket");
+    }
+    printf("Response from server: %s\n", buffer);
     close(sockfd);
     return 0;
 }
