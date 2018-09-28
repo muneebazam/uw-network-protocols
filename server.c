@@ -83,7 +83,7 @@ int main(int argc, char *argv[])
     // create new TCP socket 
     tcp_sockfd = socket(AF_INET, SOCK_STREAM, 0);
     if (tcp_sockfd < 0) {
-       error("ERROR opening socket");
+       exception("ERROR opening socket");
     }
     bzero((char *) &serv_addr_tcp, sizeof(serv_addr_tcp));
     serv_addr_tcp.sin_family = AF_INET;
@@ -96,7 +96,7 @@ int main(int argc, char *argv[])
     sprintf(r_port_str, "%d", portno);
 
     //now reply with the <r_port> value
-    if (sendto(udp_sockfd, r_port_str, length(r_port_str), 0, (struct sockaddr*) &cli_addr, client_len) < 0) {
+    if (sendto(udp_sockfd, r_port_str, strlen(r_port_str), 0, (struct sockaddr*) &cli_addr, client_len) < 0) {
         exception("sendto()");
     }
 
