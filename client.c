@@ -23,7 +23,7 @@ int main(int argc, char *argv[])
     int portno;
     int req_code;
     int success;
-    int required_args = 4;
+    int required_args = 5;
     struct sockaddr_in serv_addr;
     struct hostent *server;
     char buffer[256];

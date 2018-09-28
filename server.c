@@ -24,7 +24,7 @@ int main(int argc, char *argv[])
     int req_code;
     int bind_socket;
     int success;
-    int required_args = 1;
+    int required_args = 2;
     socklen_t client_len;
     char buffer[256];
     struct sockaddr_in serv_addr;
@@ -47,7 +47,7 @@ int main(int argc, char *argv[])
         sockfd = socket(AF_INET, SOCK_DGRAM, 0);
     } while (sockfd < 0);
 
-    // configure socket
+    // socket configuration
     bzero((char *) &serv_addr, sizeof(serv_addr));
     serv_addr.sin_family = AF_INET;
     serv_addr.sin_addr.s_addr = INADDR_ANY;
