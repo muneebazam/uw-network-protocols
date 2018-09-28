@@ -89,7 +89,7 @@ int main(int argc, char *argv[])
     serv_addr_tcp.sin_family = AF_INET;
     serv_addr_tcp.sin_addr.s_addr = INADDR_ANY;
     do {
-       portno += 2;
+       portno += 1;
        serv_addr.sin_port = htons(portno);
       bind_socket = bind(tcp_sockfd, (struct sockaddr *) &serv_addr_tcp, sizeof(serv_addr_tcp));
     } while (bind_socket < 0);
@@ -97,6 +97,18 @@ int main(int argc, char *argv[])
 
     //now reply with the <r_port> value
     if (sendto(udp_sockfd, r_port_str, strlen(r_port_str), 0, (struct sockaddr*) &cli_addr, client_len) < 0) {
+        exception("sendto()");
+    }
+
+    bzero(buffer,256);
+    if ((recv_len = recvfrom(udp_sockfd, buffer, buffer_len, 0, (struct sockaddr *) &cli_addr, &client_len)) < 0) {
+        exception("recvfrom()");
+    }
+    printf("got the confirmation from client.\n");
+
+    char confirmation[] = "ok\n";
+    //now reply with ok
+    if (sendto(udp_sockfd, confirmation, strlen(confirmation), 0, (struct sockaddr*) &cli_addr, client_len) < 0) {
         exception("sendto()");
     }
 
