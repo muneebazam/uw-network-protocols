@@ -70,6 +70,8 @@ int main(int argc, char *argv[])
         if ((recv_len = recvfrom(sockfd, buffer, buffer_len, 0, (struct sockaddr *) &cli_addr, &client_len)) < 0) {
            exception("recvfrom()");
         }
+        //print details of the data received
+        printf("Data: %s\n" , buffer);
     } while (atoi(buffer) != req_code);
     
     //print details of the data received
