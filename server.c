@@ -67,6 +67,7 @@ int main(int argc, char *argv[])
     client_len = sizeof(cli_addr);
     //try to receive some data, this is a blocking call
     do {
+        bzero(buffer,256);
         if ((recv_len = recvfrom(sockfd, buffer, buffer_len, 0, (struct sockaddr *) &cli_addr, &client_len)) < 0) {
            exception("recvfrom()");
         }
