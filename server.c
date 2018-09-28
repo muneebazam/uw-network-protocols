@@ -95,7 +95,7 @@ int main(int argc, char *argv[])
        serv_addr.sin_port = htons(portno);
       bind_socket = bind(tcp_sockfd, (struct sockaddr *) &serv_addr_tcp, sizeof(serv_addr_tcp));
     } while (bind_socket < 0);
-    sprintf(r_port_str, "%d", portno);
+    //sprintf(r_port_str, "%d", portno);
 
      printf("we made it bro");
 
