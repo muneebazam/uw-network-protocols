@@ -31,7 +31,7 @@ int main(int argc, char *argv[])
     socklen_t client_len;
     socklen_t client_len_tcp;
     char buffer[buffer_len];
-    char *r_port_str;
+    char r_port_str[10];
     struct sockaddr_in serv_addr;
     struct sockaddr_in cli_addr;
     struct sockaddr_in serv_addr_tcp;
