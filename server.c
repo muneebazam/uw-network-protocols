@@ -20,13 +20,15 @@ int main(int argc, char *argv[])
     // declare neccesary structs and variables
     int sockfd;
     int newsockfd;
-    int portno = 5001;
+    int portno = 5000;
     int req_code;
     int bind_socket;
+    int recv_len;
     int success;
     int required_args = 2;
+    int buffer_len = 256;
     socklen_t client_len;
-    char buffer[256];
+    char buffer[buffer_len];
     struct sockaddr_in serv_addr;
     struct sockaddr_in cli_addr;
 
@@ -44,13 +46,13 @@ int main(int argc, char *argv[])
 
     // continously try to open a UDP socket connection
     do {
-        sockfd = socket(AF_INET, SOCK_DGRAM, 0);
+        sockfd = socket(AF_INET, SOCK_DGRAM, IPPROTO_UDP);
     } while (sockfd < 0);
 
     // socket configuration
     bzero((char *) &serv_addr, sizeof(serv_addr));
     serv_addr.sin_family = AF_INET;
-    serv_addr.sin_addr.s_addr = INADDR_ANY;
+    serv_addr.sin_addr.s_addr = htonl(INADDR_ANY);
 
     // continously try to bind socket, incrementing portno on failure
     do {
@@ -63,9 +65,16 @@ int main(int argc, char *argv[])
     // listen and accept on socket
     listen(sockfd, 5);
     client_len = sizeof(cli_addr);
-    newsockfd = accept(sockfd, (struct sockaddr *) &cli_addr, &client_len);
-    if (newsockfd < 0) {
-        exception("ERROR on accept.\n");
+    //try to receive some data, this is a blocking call
+    if ((recv_len = recvfrom(sockfd, buffer, buffer_len, 0, (struct sockaddr *) &cli_addr, &client_len)) < 0) {
+        exception("recvfrom()");
+    }
+    //print details of the data received
+    printf("Data: %s\n" , buffer);
+         
+    //now reply the client with the same data
+    if (sendto(sockfd, buffer, recv_len, 0, (struct sockaddr*) &cli_addr, client_len) < 0) {
+        exception("sendto()");
     }
 
     // read client message into buffer and print to stdout
