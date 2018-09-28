@@ -78,13 +78,13 @@ int main(int argc, char *argv[])
     server_len = sizeof(serv_addr);
     //send the message
     if (sendto(sockfd, msg, strlen(msg), 0, (struct sockaddr *) &serv_addr, server_len) < 0) {
-        exception("sendto()");
+        exception("Error sending message");
     }
     bzero(buffer,256);
 
     //try to receive some data, this is a blocking call
     if (recvfrom(sockfd, buffer, buffer_len, 0, (struct sockaddr *) &serv_addr, &server_len) < 0) {
-        exception("recvfrom()");
+        exception("Error receiving message");
     }
 
     // // get a message from stdin and send it to server over socket
