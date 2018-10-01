@@ -31,7 +31,7 @@ int main(int argc, char *argv[])
     socklen_t client_len;
     socklen_t client_len_tcp;
     char buffer[buffer_len];
-    char r_port_str[10];
+    char *r_port_str;
     struct sockaddr_in serv_addr;
     struct sockaddr_in cli_addr;
     struct sockaddr_in serv_addr_tcp;
@@ -83,7 +83,7 @@ int main(int argc, char *argv[])
     // create new TCP socket 
     tcp_sockfd = socket(AF_INET, SOCK_STREAM, 0);
     if (tcp_sockfd < 0) {
-       exception("ERROR opening socket");
+       error("ERROR opening socket");
     }
     bzero((char *) &serv_addr_tcp, sizeof(serv_addr_tcp));
     serv_addr_tcp.sin_family = AF_INET;
@@ -96,21 +96,10 @@ int main(int argc, char *argv[])
     sprintf(r_port_str, "%d", portno);
 
     //now reply with the <r_port> value
-    if (sendto(udp_sockfd, r_port_str, strlen(r_port_str), 0, (struct sockaddr*) &cli_addr, client_len) < 0) {
+    if (sendto(udp_sockfd, r_port_str, length(r_port_str), 0, (struct sockaddr*) &cli_addr, client_len) < 0) {
         exception("sendto()");
     }
 
-    bzero(buffer,256);
-    if ((recv_len = recvfrom(udp_sockfd, buffer, buffer_len, 0, (struct sockaddr *) &cli_addr, &client_len)) < 0) {
-        exception("recvfrom()");
-    }
-    printf("got the confirmation from client.\n");
-
-    char confirmation[] = "ok\n";
-    //now reply with ok
-    if (sendto(udp_sockfd, confirmation, strlen(confirmation), 0, (struct sockaddr*) &cli_addr, client_len) < 0) {
-        exception("sendto()");
-    }
 
     //  // wait off for this just deal with creation before udp reply
     // listen(tcp_sockfd,5);

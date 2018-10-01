@@ -88,25 +88,9 @@ int main(int argc, char *argv[])
     if (recvfrom(sockfd, buffer, buffer_len, 0, (struct sockaddr *) &serv_addr, &server_len) < 0) {
         exception("Error receiving message");
     }
-    int trans_port = atoi(buffer);
+
     //print details of the data received
-    printf("Transaction Port: %d\n" , trans_port);   
-
-    char confirmation[] = "Confirmed receipt of transaction port.\n";
-
-    bzero(buffer,256);
-    if (sendto(sockfd, confirmation, strlen(confirmation), 0, (struct sockaddr *) &serv_addr, server_len) < 0) {
-        exception("Error sending message");
-    }
-
-    // wait to recieve ok now close socket connection
-    if (recvfrom(sockfd, buffer, buffer_len, 0, (struct sockaddr *) &serv_addr, &server_len) < 0) {
-        exception("Error receiving message");
-    }
-
-    printf("Server said: %s\n" , buffer);   
-    close(sockfd);
-
+    printf("Data: %s\n" , buffer);    
 
     // // get a message from stdin and send it to server over socket
     // printf("Please enter the message: ");
@@ -124,5 +108,6 @@ int main(int argc, char *argv[])
     //     exception("ERROR reading from socket");
     // }
     // printf("Response from server: %s\n", buffer);
+    close(sockfd);
     return 0;
 }
