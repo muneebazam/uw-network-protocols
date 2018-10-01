@@ -20,16 +20,18 @@ int main(int argc, char *argv[])
 {
     // declare neccesary structs and variables
     int sockfd;
+    int sockfd_tcp;
     int portno;
     int req_code;
     int success;
     int required_args = 5;
     struct sockaddr_in serv_addr;
+    struct sockaddr_in serv_addr_tcp;
     struct hostent *server;
     int buffer_len = 256;
     char buffer[buffer_len];
     char *server_address;
-    char *req_code_str;
+    char req_code_str[256];
     socklen_t server_len;
     char *msg;
 
@@ -55,6 +57,7 @@ int main(int argc, char *argv[])
     // continously try to open a UDP socket connection
     do {
         sockfd = socket(AF_INET, SOCK_DGRAM, IPPROTO_UDP);
+        printf("testazzzzzz");
     } while (sockfd < 0);
 
     // configure server hostname
@@ -64,6 +67,8 @@ int main(int argc, char *argv[])
         exit(1);
     }
 
+    printf("testazzzzzz + %s\n", msg);
+
     // socket configuration
     bzero((char *) &serv_addr, sizeof(serv_addr));
     serv_addr.sin_family = AF_INET;
@@ -72,6 +77,11 @@ int main(int argc, char *argv[])
          server->h_length);
     serv_addr.sin_port = htons(portno);
 
+<<<<<<< HEAD
+=======
+    printf("testazzzzzz");
+
+>>>>>>> 9c21f3ff6e3e3fa6bcd11f462bb42714a0bddfc9
     server_len = sizeof(serv_addr);
     //send the messages
     if (sendto(sockfd, req_code_str, strlen(req_code_str), 0, (struct sockaddr *) &serv_addr, server_len) < 0) {
@@ -83,8 +93,9 @@ int main(int argc, char *argv[])
     if (recvfrom(sockfd, buffer, buffer_len, 0, (struct sockaddr *) &serv_addr, &server_len) < 0) {
         exception("Error receiving message");
     }
-
+    int trans_port = atoi(buffer);
     //print details of the data received
+<<<<<<< HEAD
     printf("Data: %s\n" , buffer);    
 
     // // connect to server 
@@ -108,6 +119,51 @@ int main(int argc, char *argv[])
     //     exception("ERROR reading from socket");
     // }
     // printf("Response from server: %s\n", buffer);
+=======
+    printf("Transaction Port: %d\n" , trans_port);   
+
+    char confirmation[] = "Confirmed receipt of transaction port.\n";
+
+    bzero(buffer,256);
+    if (sendto(sockfd, confirmation, strlen(confirmation), 0, (struct sockaddr *) &serv_addr, server_len) < 0) {
+        exception("Error sending message");
+    }
+
+    // wait to recieve ok now close socket connection
+    if (recvfrom(sockfd, buffer, buffer_len, 0, (struct sockaddr *) &serv_addr, &server_len) < 0) {
+        exception("Error receiving message");
+    }
+
+    printf("Server said: %s\n" , buffer);   
+
+>>>>>>> 9c21f3ff6e3e3fa6bcd11f462bb42714a0bddfc9
     close(sockfd);
+
+    printf("Closed the UDP socket connection with the server.\n");
+
+    sockfd_tcp = socket(AF_INET, SOCK_STREAM, 0);
+    if (sockfd_tcp < 0) {
+        exception("ERROR opening socket");
+    }
+    bzero((char *) &serv_addr_tcp, sizeof(serv_addr_tcp));
+    serv_addr_tcp.sin_family = AF_INET;
+    bcopy((char *)server->h_addr, 
+         (char *)&serv_addr_tcp.sin_addr.s_addr,
+         server->h_length);
+    printf("The target conncection port is: %d\n", trans_port);
+    serv_addr_tcp.sin_port = htons(trans_port);
+    if (connect(sockfd_tcp, (struct sockaddr *) &serv_addr_tcp, sizeof(serv_addr_tcp)) < 0) {
+        exception("ERROR connecting");
+    }
+    success = write(sockfd_tcp, msg, strlen(msg));
+    if (success < 0) 
+         exception("ERROR writing to socket");
+    bzero(buffer,256);
+    success = read(sockfd_tcp, buffer, 255);
+    if (success < 0) 
+         exception("ERROR reading from socket");
+    printf("%s\n",buffer);
+    close(sockfd_tcp);
+
     return 0;
 }
