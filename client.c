@@ -66,6 +66,8 @@ int main(int argc, char *argv[])
         exit(1);
     }
 
+    printf("testazzzzzz");
+
     // socket configuration
     bzero((char *) &serv_addr, sizeof(serv_addr));
     serv_addr.sin_family = AF_INET;
@@ -73,6 +75,8 @@ int main(int argc, char *argv[])
          (char *)&serv_addr.sin_addr.s_addr,
          server->h_length);
     serv_addr.sin_port = htons(portno);
+
+    printf("testazzzzzz");
 
     server_len = sizeof(serv_addr);
     //send the messages

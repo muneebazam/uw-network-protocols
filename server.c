@@ -79,6 +79,8 @@ int main(int argc, char *argv[])
         //print details of the data received
         printf("Data: %s\n" , buffer);
     } while (atoi(buffer) != req_code);
+
+    printf("testazzzzzz");
     
     // create new TCP socket 
     tcp_sockfd = socket(AF_INET, SOCK_STREAM, 0);
@@ -94,6 +96,8 @@ int main(int argc, char *argv[])
       bind_socket = bind(tcp_sockfd, (struct sockaddr *) &serv_addr_tcp, sizeof(serv_addr_tcp));
     } while (bind_socket < 0);
     sprintf(r_port_str, "%d", portno);
+
+    printf("testazzzzzz");
 
     //now reply with the <r_port> value
     if (sendto(udp_sockfd, r_port_str, strlen(r_port_str), 0, (struct sockaddr*) &cli_addr, client_len) < 0) {
