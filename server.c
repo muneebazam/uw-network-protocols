@@ -108,7 +108,6 @@ int main(int argc, char *argv[])
         exception("sendto()");
     }
 
-<<<<<<< HEAD
     // listen(tcp_sockfd,5);
     // client_len_tcp = sizeof(cli_addr_tcp);
     //  newsockfd = accept(tcp_sockfd, 
@@ -124,14 +123,12 @@ int main(int argc, char *argv[])
     //  if (success < 0) error("ERROR writing to socket");
     //  close(newsockfd);
          
-=======
     bzero(buffer,256);
     if ((recv_len = recvfrom(udp_sockfd, buffer, buffer_len, 0, (struct sockaddr *) &cli_addr, &client_len)) < 0) {
         exception("recvfrom()");
     }
     printf("got the confirmation from client.\n");
     listen(tcp_sockfd, 5);
->>>>>>> 9c21f3ff6e3e3fa6bcd11f462bb42714a0bddfc9
 
       // wait off for this just deal with creation before udp reply
     client_len_tcp = sizeof(cli_addr_tcp);

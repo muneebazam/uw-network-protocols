@@ -77,11 +77,6 @@ int main(int argc, char *argv[])
          server->h_length);
     serv_addr.sin_port = htons(portno);
 
-<<<<<<< HEAD
-=======
-    printf("testazzzzzz");
-
->>>>>>> 9c21f3ff6e3e3fa6bcd11f462bb42714a0bddfc9
     server_len = sizeof(serv_addr);
     //send the messages
     if (sendto(sockfd, req_code_str, strlen(req_code_str), 0, (struct sockaddr *) &serv_addr, server_len) < 0) {
@@ -95,7 +90,7 @@ int main(int argc, char *argv[])
     }
     int trans_port = atoi(buffer);
     //print details of the data received
-<<<<<<< HEAD
+
     printf("Data: %s\n" , buffer);    
 
     // // connect to server 
@@ -119,7 +114,6 @@ int main(int argc, char *argv[])
     //     exception("ERROR reading from socket");
     // }
     // printf("Response from server: %s\n", buffer);
-=======
     printf("Transaction Port: %d\n" , trans_port);   
 
     char confirmation[] = "Confirmed receipt of transaction port.\n";
@@ -136,7 +130,6 @@ int main(int argc, char *argv[])
 
     printf("Server said: %s\n" , buffer);   
 
->>>>>>> 9c21f3ff6e3e3fa6bcd11f462bb42714a0bddfc9
     close(sockfd);
 
     printf("Closed the UDP socket connection with the server.\n");
