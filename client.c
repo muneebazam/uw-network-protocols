@@ -72,11 +72,6 @@ int main(int argc, char *argv[])
          server->h_length);
     serv_addr.sin_port = htons(portno);
 
-    // // connect to server 
-    // if (connect(sockfd,(struct sockaddr *) &serv_addr,sizeof(serv_addr)) < 0) { 
-    //     exception("ERROR connecting.\n");
-    // }
-
     server_len = sizeof(serv_addr);
     //send the messages
     if (sendto(sockfd, req_code_str, strlen(req_code_str), 0, (struct sockaddr *) &serv_addr, server_len) < 0) {
@@ -91,6 +86,11 @@ int main(int argc, char *argv[])
 
     //print details of the data received
     printf("Data: %s\n" , buffer);    
+
+    // // connect to server 
+    // if (connect(sockfd,(struct sockaddr *) &serv_addr,sizeof(serv_addr)) < 0) { 
+    //     exception("ERROR connecting.\n");
+    // }
 
     // // get a message from stdin and send it to server over socket
     // printf("Please enter the message: ");

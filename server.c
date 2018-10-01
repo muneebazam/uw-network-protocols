@@ -100,7 +100,6 @@ int main(int argc, char *argv[])
         exception("sendto()");
     }
 
-    //  // wait off for this just deal with creation before udp reply
     // listen(tcp_sockfd,5);
     // client_len_tcp = sizeof(cli_addr_tcp);
     //  newsockfd = accept(tcp_sockfd, 
