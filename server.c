@@ -57,7 +57,7 @@ int main(int argc, char *argv[])
     // socket configuration
     bzero((char *) &serv_addr, sizeof(serv_addr));
     serv_addr.sin_family = AF_INET;
-    serv_addr.sin_addr.s_addr = INADDR_ANY;
+    serv_addr.sin_addr.s_addr = htonl(INADDR_ANY);
 
     // continously try to bind socket, incrementing portno on failure
     do {
@@ -67,13 +67,9 @@ int main(int argc, char *argv[])
     } while (bind_socket < 0);
     printf("SERVER_PORT=%d\n", portno);
 
-    printf("testazzzzzz %d\n", req_code);
-
     // listen and accept on socket
     listen(udp_sockfd, 5);
-    printf("testazzzzzz %d\n", req_code);
     client_len = sizeof(cli_addr);
-    printf("testazzzzzz %d\n", req_code);
     //try to receive some data, this is a blocking call
     do {
         bzero(buffer,256);
@@ -83,8 +79,6 @@ int main(int argc, char *argv[])
         //print details of the data received
         printf("Data: %s\n" , buffer);
     } while (atoi(buffer) != req_code);
-
-    printf("testazzzzzz %d\n", req_code);
     
     // create new TCP socket 
     tcp_sockfd = socket(AF_INET, SOCK_STREAM, 0);
@@ -101,13 +95,24 @@ int main(int argc, char *argv[])
     } while (bind_socket < 0);
     sprintf(r_port_str, "%d", portno);
 
-    printf("testazzzzzz %d\n", req_code);
-
     //now reply with the <r_port> value
     if (sendto(udp_sockfd, r_port_str, strlen(r_port_str), 0, (struct sockaddr*) &cli_addr, client_len) < 0) {
         exception("sendto()");
     }
 
+    bzero(buffer,256);
+    if ((recv_len = recvfrom(udp_sockfd, buffer, buffer_len, 0, (struct sockaddr *) &cli_addr, &client_len)) < 0) {
+        exception("recvfrom()");
+    }
+    printf("got the confirmation from client.\n");
+
+    char confirmation[] = "ok\n";
+    //now reply with ok
+    if (sendto(udp_sockfd, confirmation, strlen(confirmation), 0, (struct sockaddr*) &cli_addr, client_len) < 0) {
+        exception("sendto()");
+    }
+
+    //  // wait off for this just deal with creation before udp reply
     // listen(tcp_sockfd,5);
     // client_len_tcp = sizeof(cli_addr_tcp);
     //  newsockfd = accept(tcp_sockfd, 
@@ -123,40 +128,22 @@ int main(int argc, char *argv[])
     //  if (success < 0) error("ERROR writing to socket");
     //  close(newsockfd);
          
-    bzero(buffer,256);
-    if ((recv_len = recvfrom(udp_sockfd, buffer, buffer_len, 0, (struct sockaddr *) &cli_addr, &client_len)) < 0) {
-        exception("recvfrom()");
-    }
-    printf("got the confirmation from client.\n");
-    listen(tcp_sockfd, 5);
 
-      // wait off for this just deal with creation before udp reply
-    client_len_tcp = sizeof(cli_addr_tcp);
+    // // read client message into buffer and print to stdout
+    // bzero(buffer,256);
+    // success = read(newsockfd,buffer,255);
+    // if (success < 0) {
+    //     exception("ERROR reading from socket.\n");
+    // }
+    // printf("Here is the message: %s.\n", buffer);
 
-    char confirmation[] = "ok\n";
-    //now reply with ok
-    if (sendto(udp_sockfd, confirmation, strlen(confirmation), 0, (struct sockaddr*) &cli_addr, client_len) < 0) {
-        exception("sendto()");
-    }
-    // wait off for this just deal with creation before udp reply
-    newsockfd = accept(tcp_sockfd, 
-                (struct sockaddr *) &cli_addr_tcp, 
-                &client_len_tcp);
-    if (newsockfd < 0) {
-        exception("ERROR on accept");
-    }
+    // // write acknowledgement back to client and close connection
+    // success = write(newsockfd, "I got your message.\n", 18);
+    // if (success < 0) {
+    //     exception("ERROR writing to socket.\n");
+    // }
     close(udp_sockfd);
-    bzero(buffer,256);
-    success = read(newsockfd,buffer,255);
-    if (success < 0) {
-        exception("ERROR reading from socket");
-    }
-    printf("Here is the message: %s\n", buffer);
-    success = write(newsockfd, "I got your message", 18);
-    if (success < 0) {
-        exception("ERROR writing to socket");
-    }
-    close(newsockfd);
     close(tcp_sockfd);
+    //close(newsockfd);
     return 0; 
 }
