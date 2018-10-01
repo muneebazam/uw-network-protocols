@@ -57,6 +57,7 @@ int main(int argc, char *argv[])
     // continously try to open a UDP socket connection
     do {
         sockfd = socket(AF_INET, SOCK_DGRAM, IPPROTO_UDP);
+        printf("testazzzzzz");
     } while (sockfd < 0);
 
     // configure server hostname
@@ -66,7 +67,7 @@ int main(int argc, char *argv[])
         exit(1);
     }
 
-    printf("testazzzzzz");
+    printf("testazzzzzz + %s\n", msg);
 
     // socket configuration
     bzero((char *) &serv_addr, sizeof(serv_addr));
