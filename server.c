@@ -67,9 +67,13 @@ int main(int argc, char *argv[])
     } while (bind_socket < 0);
     printf("SERVER_PORT=%d\n", portno);
 
+    printf("testazzzzzz %d\n", req_code);
+
     // listen and accept on socket
     listen(udp_sockfd, 5);
+    printf("testazzzzzz %d\n", req_code);
     client_len = sizeof(cli_addr);
+    printf("testazzzzzz %d\n", req_code);
     //try to receive some data, this is a blocking call
     do {
         bzero(buffer,256);
