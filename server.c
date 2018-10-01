@@ -57,7 +57,7 @@ int main(int argc, char *argv[])
     // socket configuration
     bzero((char *) &serv_addr, sizeof(serv_addr));
     serv_addr.sin_family = AF_INET;
-    serv_addr.sin_addr.s_addr = htonl(INADDR_ANY);
+    serv_addr.sin_addr.s_addr = INADDR_ANY;
 
     // continously try to bind socket, incrementing portno on failure
     do {
