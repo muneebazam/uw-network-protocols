@@ -31,7 +31,7 @@ int main(int argc, char *argv[])
     socklen_t client_len;
     socklen_t client_len_tcp;
     char buffer[buffer_len];
-    char *r_port_str;
+    char r_port_str[64];
     struct sockaddr_in serv_addr;
     struct sockaddr_in cli_addr;
     struct sockaddr_in serv_addr_tcp;
@@ -99,7 +99,6 @@ int main(int argc, char *argv[])
     if (sendto(udp_sockfd, r_port_str, strlen(r_port_str), 0, (struct sockaddr*) &cli_addr, client_len) < 0) {
         exception("sendto()");
     }
-
 
     //  // wait off for this just deal with creation before udp reply
     // listen(tcp_sockfd,5);
