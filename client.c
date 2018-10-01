@@ -29,7 +29,7 @@ int main(int argc, char *argv[])
     int buffer_len = 256;
     char buffer[buffer_len];
     char *server_address;
-    char *req_code_str;
+    char req_code_str[64];
     socklen_t server_len;
     char *msg;
 
