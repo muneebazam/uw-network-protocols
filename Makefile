@@ -2,7 +2,10 @@
 CC = gcc
 CFLAGS = -g
 
-all: server client
+all: server client helpers
+
+helpers: helpers.c
+	gcc -c -o helpers helpers.c
 
 server: server.c
 	gcc -o server server.c

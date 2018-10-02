@@ -7,19 +7,13 @@
 #include <sys/socket.h>
 #include <netinet/in.h>
 #include <netdb.h> 
-
-// prints the appropriate error message
-void exception(const char *msg)
-{
-    perror(msg);
-    exit(1);
-}
+#include "helpers.c"
 
 // client application main
 int main(int argc, char *argv[])
 {
     // declare neccesary structs and variables
-    int sockfd, portno, req_code, r_port, success, sockfd_tcp;
+    int sockfd, portno, req_code, r_port, outcome, sockfd_tcp;
     int required_args = 5; // client script requires 5 arguments
     struct sockaddr_in serv_addr, serv_addr_tcp;
     struct hostent *server;
@@ -30,7 +24,7 @@ int main(int argc, char *argv[])
     socklen_t server_len;
     char *msg;
 
-    // check if correct arguments are passed and instantiate
+    // handle command line arguments
     if (argc != required_args) {
         fprintf(stderr, "ERROR invalid number of arguments.\n");
         fprintf(stderr, "USAGE: ./client.sh <server address> <n_port> <req_code> <msg>\n");
@@ -91,8 +85,7 @@ int main(int argc, char *argv[])
 
     // create TCP socket 
     sockfd_tcp = socket(AF_INET, SOCK_STREAM, 0);
-    if (sockfd_tcp < 0) 
-        exception("ERROR opening socket");
+    verify(sockfd_tcp);
 
     // TCP socket configuration
     bzero((char *) &serv_addr_tcp, sizeof(serv_addr_tcp));
@@ -106,18 +99,14 @@ int main(int argc, char *argv[])
     if (connect(sockfd_tcp, (struct sockaddr *) &serv_addr_tcp, sizeof(serv_addr_tcp)) < 0) 
         exception("ERROR connecting");
         
-    // send message to the server
-    success = write(sockfd_tcp, msg, strlen(msg));
-    if (success < 0) {
-         exception("ERROR writing to socket");
-    }
+    // send message string to the server
+    outcome = write(sockfd_tcp, msg, strlen(msg));
+    verify(outcome);
 
     // recieve the reversed string from the server
     bzero(buffer,256);
-    success = read(sockfd_tcp, buffer, 255);
-    if (success < 0) {
-         exception("ERROR reading from socket");
-    }
+    outcome = read(sockfd_tcp, buffer, 255);
+    verify(outcome);
 
     // print the reversed string, close the TCP socket and exit
     printf("CLIENT_RCV_MSG=%s\n", buffer);
