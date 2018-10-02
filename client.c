@@ -19,17 +19,14 @@ void exception(const char *msg)
 int main(int argc, char *argv[])
 {
     // declare neccesary structs and variables
-    int sockfd;
-    int portno;
-    int req_code;
-    int success;
-    int required_args = 5;
-    struct sockaddr_in serv_addr;
+    int sockfd, portno, req_code, r_port, success, sockfd_tcp;
+    int required_args = 5; // client script requires 5 arguments
+    struct sockaddr_in serv_addr, serv_addr_tcp;
     struct hostent *server;
-    int buffer_len = 256;
+    int buffer_len = 256; // limit buffer length to 256
     char buffer[buffer_len];
     char *server_address;
-    char req_code_str[64];
+    char req_code_str[32];
     socklen_t server_len;
     char *msg;
 
@@ -46,68 +43,84 @@ int main(int argc, char *argv[])
         sprintf(req_code_str, "%d", req_code); 
     }
 
-    // test to see if command line arguments passed correctly
-    printf("The server_address is %s\n", server_address);
-    printf("The n_port is %d\n", portno);
-    printf("the req_code is %d\n", req_code);
-    printf("The msg is %s\n", msg);
-
     // continously try to open a UDP socket connection
     do {
         sockfd = socket(AF_INET, SOCK_DGRAM, IPPROTO_UDP);
     } while (sockfd < 0);
 
-    // configure server hostname
+    // configure server hostname 
     server = gethostbyname(argv[1]);
     if (server == NULL) {
         fprintf(stderr,"ERROR, no such host.\n");
         exit(1);
     }
 
-    // socket configuration
+    // socket configuration 
     bzero((char *) &serv_addr, sizeof(serv_addr));
     serv_addr.sin_family = AF_INET;
     bcopy((char *)server->h_addr, 
          (char *)&serv_addr.sin_addr.s_addr,
          server->h_length);
     serv_addr.sin_port = htons(portno);
-
-    // // connect to server 
-    // if (connect(sockfd,(struct sockaddr *) &serv_addr,sizeof(serv_addr)) < 0) { 
-    //     exception("ERROR connecting.\n");
-    // }
-
     server_len = sizeof(serv_addr);
-    //send the messages
+
+    //send the request code to the server
     if (sendto(sockfd, req_code_str, strlen(req_code_str), 0, (struct sockaddr *) &serv_addr, server_len) < 0) {
         exception("Error sending message");
     }
-    bzero(buffer,256);
 
-    //try to receive some data, this is a blocking call
+    // block until we recieve a response from the server
+    bzero(buffer, 256);
     if (recvfrom(sockfd, buffer, buffer_len, 0, (struct sockaddr *) &serv_addr, &server_len) < 0) {
         exception("Error receiving message");
     }
 
-    //print details of the data received
-    printf("Data: %s\n" , buffer);    
+    // convert <r_port> to int and send a confirmation back to the server
+    r_port = atoi(buffer);
+    if (sendto(sockfd, buffer, strlen(buffer), 0, (struct sockaddr *) &serv_addr, server_len) < 0) {
+        exception("Error sending message");
+    }
 
-    // // get a message from stdin and send it to server over socket
-    // printf("Please enter the message: ");
-    // bzero(buffer,256);
-    // fgets(buffer,255,stdin);
-    // success = write(sockfd, msg, strlen(msg));
-    // if (success < 0) {
-    //     exception("ERROR writing to socket.\n");
-    // }
+    // block until we receive acknowledgement from the server
+    if (recvfrom(sockfd, buffer, buffer_len, 0, (struct sockaddr *) &serv_addr, &server_len) < 0) {
+        exception("Error receiving message");
+    }
 
-    // // get response from server and print it out
-    // bzero(buffer,256);
-    // success = read(sockfd, buffer, 255);
-    // if (success < 0) {
-    //     exception("ERROR reading from socket");
-    // }
-    // printf("Response from server: %s\n", buffer);
+    // close UDP socket
     close(sockfd);
+
+    // create TCP socket 
+    sockfd_tcp = socket(AF_INET, SOCK_STREAM, 0);
+    if (sockfd_tcp < 0) 
+        exception("ERROR opening socket");
+
+    // TCP socket configuration
+    bzero((char *) &serv_addr_tcp, sizeof(serv_addr_tcp));
+    serv_addr_tcp.sin_family = AF_INET;
+    bcopy((char *)server->h_addr, 
+         (char *)&serv_addr_tcp.sin_addr.s_addr,
+         server->h_length);
+    serv_addr_tcp.sin_port = htons(r_port);
+
+    // connect and handshake protocol for TCP
+    if (connect(sockfd_tcp, (struct sockaddr *) &serv_addr_tcp, sizeof(serv_addr_tcp)) < 0) 
+        exception("ERROR connecting");
+        
+    // send message to the server
+    success = write(sockfd_tcp, msg, strlen(msg));
+    if (success < 0) {
+         exception("ERROR writing to socket");
+    }
+
+    // recieve the reversed string from the server
+    bzero(buffer,256);
+    success = read(sockfd_tcp, buffer, 255);
+    if (success < 0) {
+         exception("ERROR reading from socket");
+    }
+
+    // print the reversed string, close the TCP socket and exit
+    printf("CLIENT_RCV_MSG=%s\n", buffer);
+    close(sockfd_tcp);
     return 0;
 }
