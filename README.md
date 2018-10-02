@@ -51,10 +51,10 @@ General Flow
 
 9. Server will print the message to its stdout and then reverse the message, sending it back over the TCP socket
 
-10.Client will recieve the reversed string and print it to its stdout
+10. Client will recieve the reversed string and print it to its stdout
 
-11.Client will close it's connection with the server and exit
+11. Client will close it's connection with the server and exit
 
-12.Server will be always on, waiting for new connections and if found starts over from step 2  
+12. Server will be always on, waiting for new connections and if found starts over from step 2  
 
 
