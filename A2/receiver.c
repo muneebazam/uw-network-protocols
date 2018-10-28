@@ -46,16 +46,6 @@ int main(int argc, char *argv[]) {
     int portno = 5000; // start search at min port 5000
     int udp_sockfd;
 
-    // declare neccesary structs and variables
-    int udp_sockfd, tcp_sockfd, newsock_fd, req_code, recv_len, outcome;
-    int required_args = 2; // required # args for server script (including program name)
-    int buffer_len = 1024; // fix buffer length at 256
-    int portno = 5000; // start search at min port 5000
-    socklen_t client_len, clientlen, clilen;
-    char buffer[buffer_len];
-    char r_port_str[32];
-    struct sockaddr_in serv_addr, cli_addr, serv_addr_tcp, cli_addr_tcp;
-
     // handle command line arguments
     if (argc != required_args) {
         fprintf(stderr, "ERROR invalid number of arguments.\n");
