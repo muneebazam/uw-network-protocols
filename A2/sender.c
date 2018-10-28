@@ -31,7 +31,7 @@ void setupSocket(int *sockfd, int SOCKET_TYPE) {
 void *myThreadFun(void *vargp) 
 { 
     for (int i = 0; i < 100; i++) {
-        printf(i);
+        printf("%d\n", i);
     }
 } 
 
@@ -85,7 +85,7 @@ int main(int argc, char *argv[]) {
     // return 0;
 
     for (int i = 0; i < 100; i++) {
-        printf(i);
+        printf("%d\n", i);
     }
 
     pthread_t thread_id; 
