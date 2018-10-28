@@ -1,4 +1,4 @@
-Networks Assignment 1 - Go-Back-N Protocol
+Networks Assignment 2 - Go-Back-N Protocol
 ==========================================
 
 Compiling and Setup

@@ -11,6 +11,8 @@
 // function that takes care of socket configuration
 void setupSocket(int *sockfd, struct sockaddr_in addr, int *port, int SOCKET_TYPE) {
 
+
+
     int outcome;
     // continously try to open a UDP socket connection until one is successfully opened
     do {
@@ -40,13 +42,26 @@ int main(int argc, char *argv[]) {
     int receiver_port;
     int WINDOW = 10;
     int ack_num = 0;
+    int required_args = 5; // required # args for server script (including program name)
+    int portno = 5000; // start search at min port 5000
+    int udp_sockfd;
+
+    // declare neccesary structs and variables
+    int udp_sockfd, tcp_sockfd, newsock_fd, req_code, recv_len, outcome;
+    int required_args = 2; // required # args for server script (including program name)
+    int buffer_len = 1024; // fix buffer length at 256
+    int portno = 5000; // start search at min port 5000
+    socklen_t client_len, clientlen, clilen;
+    char buffer[buffer_len];
+    char r_port_str[32];
+    struct sockaddr_in serv_addr, cli_addr, serv_addr_tcp, cli_addr_tcp;
 
     // handle command line arguments
     if (argc != required_args) {
         fprintf(stderr, "ERROR invalid number of arguments.\n");
-        fprintf(stderr, "USAGE: ./server.sh <network emulator hostname>
-                                            <Emulator UDP port to receive ACKs>
-                                            <Receiver UDP port to receive Data>
+        fprintf(stderr, "USAGE: ./server.sh <network emulator hostname> \
+                                            <Emulator UDP port to receive ACKs> \
+                                            <Receiver UDP port to receive Data> \
                                             <name of file to write data to>\n");
         exit(1);
     } else {
