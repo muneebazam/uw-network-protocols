@@ -84,13 +84,12 @@ int main(int argc, char *argv[]) {
     // close(sockfd_tcp);
     // return 0;
 
-    for (int i = 0; i < 100; i++) {
-        printf("%d\n", i);
-    }
-
     pthread_t thread_id; 
     printf("Before Thread\n"); 
     pthread_create(&thread_id, NULL, myThreadFun, NULL); 
+    for (int i = 0; i < 100; i++) {
+        printf("%d\n", i);
+    }
     pthread_join(thread_id, NULL); 
     printf("After Thread\n"); 
     return 0;
