@@ -30,17 +30,25 @@ int main(int argc, char *argv[]) {
 
     // declare necessary structs and variables
     char *emulator_hostname;
+    char *server_address;
     char *file_name;
     int emulator_port;
     int sender_port;
+    int sockfd;
+    int sockfd_tcp;
     int WINDOW = 10;
+    int required_args = 5;
+    int portno = 5000;
+    struct hostent *server;
+    struct sockaddr_in serv_addr;
+    socklen_t server_len;
 
     // handle command line arguments
     if (argc != required_args) {
         fprintf(stderr, "ERROR invalid number of arguments.\n");
-        fprintf(stderr, "USAGE: ./sender.sh <network emulator hostname>
-                                            <Emulator UDP port to receive data at> 
-                                            <Sender UDP port to receive ACKs at>
+        fprintf(stderr, "USAGE: ./sender.sh <network emulator hostname> \
+                                            <Emulator UDP port to receive data at> \
+                                            <Sender UDP port to receive ACKs at> \
                                             <name of the file to transfer>\n");
         exit(1);
     } else {
