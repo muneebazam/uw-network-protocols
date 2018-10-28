@@ -45,6 +45,7 @@ int main(int argc, char *argv[]) {
     int required_args = 5; // required # args for server script (including program name)
     int portno = 5000; // start search at min port 5000
     int udp_sockfd;
+    struct sockaddr_in serv_addr;
 
     // handle command line arguments
     if (argc != required_args) {
