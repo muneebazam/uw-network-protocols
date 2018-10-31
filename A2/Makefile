@@ -1,14 +1,16 @@
-# build a program from 2 files and one shared header
-CC = gcc
-CFLAGS = -g
+JFLAGS = -g
+JC = javac
+.SUFFIXES: .java .class
+.java.class:
+        $(JC) $(JFLAGS) $*.java
 
-all: receiver sender helpers
+CLASSES = \
+        Sender.java \
+        Receiver.java
 
-helpers: helpers.c
-	gcc -c -o helpers helpers.c
+default: classes
 
-receiver: receiver.c
-	gcc -o receiver receiver.c
+classes: $(CLASSES:.java=.class)
 
-sender: sender.c
-	gcc -o sender sender.c 
+clean:
+        $(RM) *.class
