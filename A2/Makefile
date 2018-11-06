@@ -5,8 +5,9 @@ JC = javac
 	$(JC) $(JFLAGS) $*.java
 
 CLASSES = \
+	Receiver.java \
 	Sender.java \
-	Receiver.java
+	packet.java
 
 default: classes
 
