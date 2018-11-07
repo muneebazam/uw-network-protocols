@@ -236,6 +236,9 @@ public class Sender
 			System.out.println("made it to the EOT stage.");
 		}
 
+		timer.cancel();
+		ack_receiver.stop();
+
 		// EOT Transmission
         DatagramSocket EOT_send_socket = new DatagramSocket();
         InetAddress clientIP = InetAddress.getByName(host_address);
@@ -253,8 +256,6 @@ public class Sender
 		if (EOT_ack_pkt.getType() == 2) {
             receive_socket.close();
 		}
-		timer.cancel();
-		ack_receiver.stop();
 		System.exit(0);
 	}
 }
