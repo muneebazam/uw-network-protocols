@@ -110,7 +110,7 @@ public class Sender
 					System.out.println("Number of packets ACKd so far: " + num_packets_ACKd);
 					num_packets_ACKd = num_packets_ACKd + 1;
 					num_packets_ACKd_sem.release();
-					if (num_packets_ACKd == total_num_packets) {
+					if (num_packets_ACKd >= total_num_packets) {
 						if (DEBUG) {
 							System.out.println("Received ACK for all the packets we needed");
 						}
@@ -138,7 +138,8 @@ public class Sender
                 t = new Thread(this, "Acknowledgement Receiver");
                 t.start();
             }
-        }
+		}
+	
 	}
 	
 	private static void send_packet(int i) throws Exception {
@@ -256,6 +257,7 @@ public class Sender
 		if (EOT_ack_pkt.getType() == 2) {
             receive_socket.close();
 		}
+		ack_receiver.interrupt();
 		System.exit(0);
 	}
 }
