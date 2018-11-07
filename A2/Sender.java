@@ -41,7 +41,7 @@ public class Sender
 	private static int next_packet = 0;
 
 	// DEBUG MODE
-	private static int DEBUG = 1;
+	private static boolean DEBUG = true;
 
 	// Semaphores to 'lock' the two variables above
 	private static Semaphore num_packets_ACKd_sem = new Semaphore(1, true);
