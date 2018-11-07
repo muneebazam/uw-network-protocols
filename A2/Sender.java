@@ -88,10 +88,18 @@ public class Sender
                 int seq_num = packet.parseUDPdata(ack_pkt.getData()).getSeqNum();
 				ack_log.println(seq_num);
 
+				next_packet_sem.acquire();
+				if (next_packet == seq_num) {
+					num_packets_ACKd_sem.acquire();
+					num_packets_ACKd = next_packet;
+					num_packets_ACKd_sem.release();
+				}
+				next_packet_sem.release();
+
 				if (DEBUG) {
 					System.out.println("Received an ACK for packet " + seq_num);
 				}
-				
+		
 				// perform sequence number specific action 
 				if (seq_num == (num_packets_ACKd % MAX_SEQ_NUM)){
 
@@ -100,7 +108,7 @@ public class Sender
 					}
 					num_packets_ACKd_sem.acquire();
 					System.out.println("Number of packets ACKd so far: " + num_packets_ACKd);
-					num_packets_ACKd += 1;
+					num_packets_ACKd = num_packets_ACKd + 1;
 					num_packets_ACKd_sem.release();
 					if (num_packets_ACKd == total_num_packets) {
 						if (DEBUG) {
@@ -151,7 +159,7 @@ public class Sender
 	private static void resend_packets() throws Exception {
         num_packets_ACKd_sem.acquire();
         next_packet_sem.acquire();
-        for (int i = num_packets_ACKd; i <= next_packet; i++) {
+        for (int i = num_packets_ACKd; i < next_packet; i++) {
 			if (DEBUG) {
 				System.out.println("Attempting to resend packet: " + i);
 			}
