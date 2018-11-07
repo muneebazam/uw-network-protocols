@@ -85,10 +85,8 @@ public class Sender
                 receive_socket.receive(ack_pkt);
                 int seq_num = packet.parseUDPdata(ack_pkt.getData()).getSeqNum();
 				ack_log.println(seq_num);
+				System.out.println("Inside the main ACK Receiver");
 				
-				// log the sequence number
-				ack_log.println(seq_num);
-
 				// perform sequence number specific action 
 				if (seq_num == (num_packets_ACKd % MAX_SEQ_NUM)){
                 	num_packets_ACKd_sem.acquire();
@@ -204,6 +202,8 @@ public class Sender
 		}
 		num_packets_ACKd_sem.release();
 		seq_num_log.close();
+
+		System.out.println("made it to the EOT stage");
 
 		// EOT Transmission
         DatagramSocket EOT_send_socket = new DatagramSocket();
