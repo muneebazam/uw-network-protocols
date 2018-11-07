@@ -40,6 +40,9 @@ public class Sender
 	private static int num_packets_ACKd = 0;
 	private static int next_packet = 0;
 
+	// DEBUG MODE
+	private static int DEBUG = 1;
+
 	// Semaphores to 'lock' the two variables above
 	private static Semaphore num_packets_ACKd_sem = new Semaphore(1, true);
     private static Semaphore next_packet_sem = new Semaphore(1, true);
@@ -50,12 +53,7 @@ public class Sender
 		byte[] file_bytes = new byte[(int) file.length()];
 		file.readFully(file_bytes);
 		file.close();
-		for (int i = 0; i < file_bytes.length; i++) {
-			System.out.println("ye");
-			System.out.println(file_bytes[i]);
-		}
 		total_num_packets = (int) Math.ceil((double) file_bytes.length / MAX_PAYLOAD);
-		System.out.println("number of packets are: " + total_num_packets);
 		packet[] packets = new packet[total_num_packets];
 		for (int i = 0; i < total_num_packets; i++) {
 			int numBytes = Math.min(MAX_PAYLOAD, file_bytes.length - i * MAX_PAYLOAD);
@@ -66,6 +64,10 @@ public class Sender
 			} catch(Exception e) {
 				throw new RuntimeException(e);
 			}
+		}
+
+		if (DEBUG) {
+			System.out.println("number of packets are: " + total_num_packets);
 		}
 		return packets;
 	}
@@ -85,22 +87,33 @@ public class Sender
                 receive_socket.receive(ack_pkt);
                 int seq_num = packet.parseUDPdata(ack_pkt.getData()).getSeqNum();
 				ack_log.println(seq_num);
-				System.out.println("Inside the main ACK Receiver");
+
+				if (DEBUG) {
+					System.out.println("Received an ACK for packet " + seq_num);
+				}
 				
 				// perform sequence number specific action 
 				if (seq_num == (num_packets_ACKd % MAX_SEQ_NUM)){
+
+					if (DEBUG) {
+						System.out.println("Received an ACK for packet we were expecting: " + seq_num);
+					}
                 	num_packets_ACKd_sem.acquire();
 					num_packets_ACKd += 1;
 					num_packets_ACKd_sem.release();
-					if (num_packets_ACKd == total_num_packets) break;
+					if (num_packets_ACKd == total_num_packets) {
+						if (DEBUG) {
+							System.out.println("Received ACK for all the packets we needed");
+						}
+						break;
+					}
 			    	restart_timer();
 				}
             }
             timer.cancel();
 			ack_log.close();
 			num_packets_ACKd_sem.release();
-			System.out.println("made it to the end of ACK Receiver thread");
-			System.exit(1);
+			System.exit(0);
         }
 
         public void run() {
@@ -145,7 +158,10 @@ public class Sender
         timer.scheduleAtFixedRate(new TimerTask() {
             @Override
             public void run() {
-                try{
+                try {
+					if (DEBUG) {
+						System.out.println("Timer expired, now resending all unACKd packets");
+					}
                     resend_packets();
                 } catch (Exception e) {
                     e.printStackTrace();
@@ -184,18 +200,25 @@ public class Sender
 		ack_receiver.start();
 
 		num_packets_ACKd_sem.acquire();
-		// num packets ackd = 0
-		// total num packets = 1
-		System.out.println("number of packets ackD: " + num_packets_ACKd);
-		System.out.println("total num packets are: " + total_num_packets);
+		if (DEBUG) {
+			System.out.println("number of packets ackD: " + num_packets_ACKd);
+			System.out.println("total num packets are: " + total_num_packets);
+		}
+
 		while (num_packets_ACKd < total_num_packets) {
-			System.out.println("inside the main thread while loop");
 			num_packets_ACKd_sem.release();
 			next_packet_sem.acquire();
 			while (next_packet < total_num_packets && 
 				   (next_packet - num_packets_ACKd) < WINDOW_SIZE) {
-				if (num_packets_ACKd == 0 && next_packet == 0) start_timer();
-				System.out.println("attempting to send packet: " + next_packet);
+				if (num_packets_ACKd == 0 && next_packet == 0) {
+					if (DEBUG) {
+						System.out.println("Attempting to send the first packet and starting timer");
+					}
+					start_timer();
+				}
+				if (DEBUG) {
+					System.out.println("Attempting to send packet: " + next_packet);
+				}
 				send_packet(next_packet);
 				next_packet += 1;
 			}
@@ -205,7 +228,9 @@ public class Sender
 		num_packets_ACKd_sem.release();
 		seq_num_log.close();
 
-		System.out.println("made it to the EOT stage");
+		if (DEBUG) {
+			System.out.println("made it to the EOT stage.");
+		}
 
 		// EOT Transmission
         DatagramSocket EOT_send_socket = new DatagramSocket();
@@ -222,10 +247,8 @@ public class Sender
         packet EOT_ack_pkt = packet.parseUDPdata(EOT_ACK.getData());
 
 		if (EOT_ack_pkt.getType() == 2) {
-			System.out.println("received EOT packet");
             receive_socket.close();
 		}
-		System.out.println("made it to the end of the main thread");
 		System.exit(0);
 	}
 }

@@ -8,7 +8,7 @@ import java.io.PrintWriter;
 public class Receiver {
 
 	private static final int MAX_SEQ_NUM = 32;
-	private static final int MAX_BUFFER_SIZE = 512;
+	private static final int MAX_BUFFER_SIZE = 512; // bytes
 	private static int expected_seq_num = 0;
 	private static PrintWriter arrival_log;
 	private static PrintWriter output_file;
@@ -16,6 +16,9 @@ public class Receiver {
 	private static int send_port;
 	private static int receive_port;
 	private static String file_name;
+
+	// DEBUG MODE
+	private static int DEBUG = 1;
 
 	private static void send_packet(packet pkt) throws Exception {
 		byte[] data = pkt.getUDPdata();
@@ -56,16 +59,24 @@ public class Receiver {
             int seq_num = pkt.getSeqNum();
 			arrival_log.println(seq_num);
 
+			if (DEBUG) {
+				System.out.println("RECEIVER: Received packet with seq_num " + seq_num);
+			}
+
 			// packet type specific behaviour 
 			if (pkt.getType() == 1) {
 				if (seq_num == expected_seq_num) {
-					System.out.println("trying to add new packet data to this output file");
-					System.out.println(new String(pkt.getData()));
+					if (DEBUG) {
+						System.out.println("RECEIVER: Received the expected_seq_num: " + expected_seq_num);
+					}
 					output_file.print(new String(pkt.getData()));
                 	send_packet(packet.createACK(seq_num));
 					expected_seq_num += 1;
 					expected_seq_num %= MAX_SEQ_NUM;
 				} else {
+					if (DEBUG) {
+						System.out.println("RECEIVER: Received a packet we were not expecting: " + seq_num);
+					}
 					packet ack;
 					if (expected_seq_num == 0) {
 						ack = packet.createACK(0);
@@ -75,7 +86,7 @@ public class Receiver {
                 	send_packet(ack);
 				}
 			} else if (pkt.getType() == 2) {
-				System.out.println("sending EOT packet");
+				System.out.println("RECEIVER: Receieved EOT packet");
 				send_packet(packet.createEOT(seq_num));
 				break;
 			}			
