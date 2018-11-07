@@ -90,7 +90,6 @@ public class Sender
 
 				if (DEBUG) {
 					System.out.println("Received an ACK for packet " + seq_num);
-					System.out.println("Number of packets ACKd so far: " + num_packets_ACKd);
 				}
 				
 				// perform sequence number specific action 
@@ -100,6 +99,7 @@ public class Sender
 						System.out.println("Received an ACK for packet we were expecting: " + seq_num);
 					}
 					num_packets_ACKd_sem.acquire();
+					System.out.println("Number of packets ACKd so far: " + num_packets_ACKd);
 					num_packets_ACKd += 1;
 					num_packets_ACKd_sem.release();
 					if (num_packets_ACKd == total_num_packets) {
@@ -207,10 +207,6 @@ public class Sender
 		ack_receiver.start();
 
 		num_packets_ACKd_sem.acquire();
-		if (DEBUG) {
-			System.out.println("number of packets ackD: " + num_packets_ACKd);
-			System.out.println("total num packets are: " + total_num_packets);
-		}
 		while (num_packets_ACKd < total_num_packets) {
 			num_packets_ACKd_sem.release();
 			next_packet_sem.acquire();

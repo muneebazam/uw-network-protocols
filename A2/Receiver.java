@@ -79,6 +79,7 @@ public class Receiver {
 						System.out.println("RECEIVER: Expecting packet with seq_num: " + expected_seq_num);
 					}
 					if (expected_seq_num > 0) {
+						System.out.println("RECEIVER: Sending back ACK for latest seq_num: " + ((expected_seq_num - 1) % MAX_SEQ_NUM));
 						packet ack = packet.createACK((expected_seq_num - 1) % MAX_SEQ_NUM);
 						send_packet(ack);
 					}
