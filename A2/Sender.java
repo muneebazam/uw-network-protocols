@@ -46,7 +46,7 @@ public class Sender
 
 	private static packet[] create_packets_from_file() throws Exception {
 
-		RandomAccessFile file = new RandomAccessFile(fileName, "r");
+		RandomAccessFile file = new RandomAccessFile(file_name, "r");
 		byte[] file_bytes = new byte[(int)file.length()];
 		file.readFully(file_bytes);
 		for (int i = 0; i < file_bytes.length; i++) {
