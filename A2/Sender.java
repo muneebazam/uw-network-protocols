@@ -75,16 +75,14 @@ public class Sender
 	private static class ReceiveACKs extends Thread {
         private Thread t;
 		private PrintWriter ack_log;
-		private boolean running;
 
         ReceiveACKs() throws IOException {
 			ack_log = new PrintWriter(new FileWriter("./ack.log"));
-			running = true;
         }
 
         private void ACK_receiver() throws Exception{
             byte[] ack_data = new byte[ACK_BUFFER];
-            while (running) {
+            while (true) {
                 DatagramPacket ack_pkt = new DatagramPacket(ack_data, ack_data.length);
                 receive_socket.receive(ack_pkt);
                 int seq_num = packet.parseUDPdata(ack_pkt.getData()).getSeqNum();
@@ -112,6 +110,9 @@ public class Sender
 					System.out.println("Number of packets ACKd so far: " + num_packets_ACKd);
 					num_packets_ACKd = num_packets_ACKd + 1;
 					num_packets_ACKd_sem.release();
+					if (num_packets_ACKd == total_num_packets) {
+						break;
+					}
 					restart_timer();
 				}
             }
@@ -135,11 +136,6 @@ public class Sender
                 t.start();
             }
 		}
-
-		public void stop_thread() {
-			running = false;
-		}
-	
 	}
 	
 	private static void send_packet(int i) throws Exception {
@@ -257,7 +253,7 @@ public class Sender
 		if (EOT_ack_pkt.getType() == 2) {
             receive_socket.close();
 		}
-		ack_receiver.stop_thread();
+		ack_receiver.stop();
 		System.exit(0);
 	}
 }
