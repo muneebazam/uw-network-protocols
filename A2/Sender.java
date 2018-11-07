@@ -151,7 +151,7 @@ public class Sender
 	private static void resend_packets() throws Exception {
         num_packets_ACKd_sem.acquire();
         next_packet_sem.acquire();
-        for (int i = num_packets_ACKd; i < next_packet; i++) {
+        for (int i = num_packets_ACKd; i <= next_packet; i++) {
 			if (DEBUG) {
 				System.out.println("Attempting to resend packet: " + i);
 			}
