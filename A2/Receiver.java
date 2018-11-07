@@ -59,6 +59,8 @@ public class Receiver {
 			// packet type specific behaviour 
 			if (pkt.getType() == 1) {
 				if (seq_num == expected_seq_num) {
+					System.out.println("trying to add new packet data to this output file");
+					System.out.println(new String(pkt.getData()));
 					output_file.print(new String(pkt.getData()));
                 	send_packet(packet.createACK(seq_num));
 					expected_seq_num += 1;
