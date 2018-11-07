@@ -212,8 +212,6 @@ public class Sender
 		}
 
 		while (num_packets_ACKd < total_num_packets) {
-			System.out.println("WE HAVE RECIEVED: " + num_packets_ACKd + " ACK's");
-			System.out.println("THE NEXT PACKET IS: " + next_packet);
 			num_packets_ACKd_sem.release();
 			next_packet_sem.acquire();
 			while (next_packet < total_num_packets && 
