@@ -7,6 +7,7 @@ import java.io.FileWriter;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.PrintWriter;
+import java.io.RandomAccessFile;
 import java.net.DatagramPacket;
 import java.net.DatagramSocket;
 import java.net.InetAddress;
@@ -44,8 +45,10 @@ public class Sender
     private static Semaphore next_packet_sem = new Semaphore(1, true);
 
 	private static packet[] create_packets_from_file() throws Exception {
-		File file = new File(file_name);
-		byte[] file_bytes = Files.readAllBytes(file.toPath());
+
+		RandomAccessFile file = new RandomAccessFile(fileName, "r");
+		byte[] file_bytes = new byte[(int)file.length()];
+		file.readFully(file_bytes);
 		for (int i = 0; i < file_bytes.length; i++) {
 			System.out.println(file_bytes[i]);
 		}
