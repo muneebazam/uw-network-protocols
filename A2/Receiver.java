@@ -68,6 +68,7 @@ public class Receiver {
                 	send_packet(ack);
 				}
 			} else if (pkt.getType() == 2) {
+				System.out.println("sending EOT packet");
 				send_packet(packet.createEOT(seq_num));
 				break;
 			}			
