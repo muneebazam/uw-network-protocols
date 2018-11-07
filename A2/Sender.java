@@ -54,7 +54,7 @@ public class Sender
 			System.out.println("ye");
 			System.out.println(file_bytes[i]);
 		}
-		int total_num_packets = (int) Math.ceil((double) file_bytes.length / MAX_PAYLOAD);
+		total_num_packets = (int) Math.ceil((double) file_bytes.length / MAX_PAYLOAD);
 		System.out.println("number of packets are: " + total_num_packets);
 		packet[] packets = new packet[total_num_packets];
 		for (int i = 0; i < total_num_packets; i++) {
