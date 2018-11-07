@@ -88,7 +88,6 @@ public class Sender
                 int seq_num = packet.parseUDPdata(ack_pkt.getData()).getSeqNum();
 				ack_log.println(seq_num);
 
-				num_packets_ACKd_sem.acquire();
 				if (DEBUG) {
 					System.out.println("Received an ACK for packet " + seq_num);
 					System.out.println("Number of packets ACKd so far: " + num_packets_ACKd);
@@ -100,6 +99,7 @@ public class Sender
 					if (DEBUG) {
 						System.out.println("Received an ACK for packet we were expecting: " + seq_num);
 					}
+					num_packets_ACKd_sem.acquire();
 					num_packets_ACKd += 1;
 					num_packets_ACKd_sem.release();
 					if (num_packets_ACKd == total_num_packets) {
@@ -109,7 +109,6 @@ public class Sender
 						break;
 					}
 					restart_timer();
-					num_packets_ACKd_sem.acquire();
 				}
             }
             timer.cancel();
