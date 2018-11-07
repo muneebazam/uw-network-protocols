@@ -50,6 +50,7 @@ public class Sender
 			System.out.println(file_bytes[i]);
 		}
 		double min_required_packets = file_bytes.length / MAX_PAYLOAD;
+		System.out.println("number of packets are: " + total_num_packets);
 		int total_num_packets = (int) Math.ceil(min_required_packets);
 		packet[] packets = new packet[total_num_packets];
 		for (int i = 0; i < total_num_packets; i++) {
@@ -81,6 +82,9 @@ public class Sender
                 int seq_num = packet.parseUDPdata(ack_pkt.getData()).getSeqNum();
 				ack_log.println(seq_num);
 				
+				// log the sequence number
+				ack_log.println(seq_num);
+
 				// perform sequence number specific action 
 				if (seq_num == (num_packets_ACKd % MAX_SEQ_NUM)){
                 	num_packets_ACKd_sem.acquire();
@@ -89,8 +93,6 @@ public class Sender
 					if (num_packets_ACKd == total_num_packets) break;
 			    	restart_timer();
 				}
-				// log the sequence number
-				ack_log.println(seq_num);
             }
             timer.cancel();
 			ack_log.close();
