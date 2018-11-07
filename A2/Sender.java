@@ -101,6 +101,7 @@ public class Sender
             timer.cancel();
 			ack_log.close();
 			num_packets_ACKd_sem.release();
+			System.out.println("made it to the end of ACK Receiver thread");
 			System.exit(1);
         }
 
@@ -222,6 +223,7 @@ public class Sender
 			System.out.println("received EOT packet");
             receive_socket.close();
 		}
+		System.out.println("made it to the end of the main thread");
 		System.exit(0);
 	}
 }
