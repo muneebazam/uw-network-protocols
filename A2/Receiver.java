@@ -78,13 +78,10 @@ public class Receiver {
 						System.out.println("RECEIVER: Received a packet we were not expecting: " + seq_num);
 						System.out.println("RECEIVER: Expecting packet with seq_num: " + expected_seq_num);
 					}
-					packet ack;
-					if (expected_seq_num == 0) {
-						ack = packet.createACK(0);
-					} else {
-						ack = packet.createACK((expected_seq_num - 1) % MAX_SEQ_NUM);
+					if (expected_seq_num > 0) {
+						packet ack = packet.createACK((expected_seq_num - 1) % MAX_SEQ_NUM);
+						send_packet(ack);
 					}
-                	send_packet(ack);
 				}
 			} else if (pkt.getType() == 2) {
 				System.out.println("RECEIVER: Receieved EOT packet");
