@@ -26,6 +26,7 @@ public class Sender
 	private static final int WINDOW_SIZE = 10;
 	private static final int MAX_SEQ_NUM = 32;
 
+	private static DatagramSocket receive_socket;
 	private static String host_address;
 	private static int total_num_packets;
 	private static int send_port;
@@ -63,11 +64,9 @@ public class Sender
 
 	private static class ReceiveACKs extends Thread {
         private Thread t;
-		private DatagramSocket receive_socket;
         private PrintWriter ack_log;
 
         ReceiveACKs() throws IOException {
-            receive_socket = new DatagramSocket(receive_port);
             ack_log = new PrintWriter(new FileWriter("./ack.log"));
         }
 
@@ -91,8 +90,7 @@ public class Sender
 				ack_log.println(seq_num);
             }
             timer.cancel();
-            ack_log.close();
-            receive_socket.close();
+			ack_log.close();
             num_packets_ACKd_sem.release();
         }
 
@@ -170,6 +168,8 @@ public class Sender
 		seq_num_log = new PrintWriter(new FileWriter("./seqnum.log"));
 		timer = new Timer();
 		packets = create_packets_from_file();
+		receive_socket = new DatagramSocket(receive_port);
+
 		ReceiveACKs ack_receiver = new ReceiveACKs();
 		ack_receiver.start();
 
@@ -199,13 +199,12 @@ public class Sender
 
         // Recieve EOT
         byte[] EOT = new byte[ACK_BUFFER];
-        DatagramSocket EOT_receive_socket = new DatagramSocket(receive_port);
 		DatagramPacket EOT_ACK = new DatagramPacket(EOT, EOT.length);
-		EOT_receive_socket.receive(EOT_ACK);
+		receive_socket.receive(EOT_ACK);
         packet EOT_ack_pkt = packet.parseUDPdata(EOT_ACK.getData());
 
 		if (EOT_ack_pkt.getType() == 2) {
-            EOT_receive_socket.close();
+            receive_socket.close();
 		}
 		System.exit(0);
 	}
