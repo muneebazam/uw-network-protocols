@@ -89,7 +89,7 @@ public class Sender
 				ack_log.println(seq_num);
 
 				next_packet_sem.acquire();
-				if (next_packet == seq_num) {
+				if (next_packet % MAX_SEQ_NUM == seq_num) {
 					num_packets_ACKd_sem.acquire();
 					num_packets_ACKd = next_packet;
 					num_packets_ACKd_sem.release();
