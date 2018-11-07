@@ -253,6 +253,7 @@ public class Sender
 		if (EOT_ack_pkt.getType() == 2) {
             receive_socket.close();
 		}
+		timer.cancel();
 		ack_receiver.stop();
 		System.exit(0);
 	}
