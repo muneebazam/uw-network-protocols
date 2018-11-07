@@ -47,14 +47,15 @@ public class Sender
 	private static packet[] create_packets_from_file() throws Exception {
 
 		RandomAccessFile file = new RandomAccessFile(file_name, "r");
-		byte[] file_bytes = new byte[(int)file.length()];
+		byte[] file_bytes = new byte[file.length()];
 		file.readFully(file_bytes);
+		file.close();
 		for (int i = 0; i < file_bytes.length; i++) {
 			System.out.println(file_bytes[i]);
 		}
 		double min_required_packets = file_bytes.length / MAX_PAYLOAD;
-		System.out.println("number of packets are: " + total_num_packets);
 		int total_num_packets = (int) Math.ceil(min_required_packets);
+		System.out.println("number of packets are: " + total_num_packets);
 		packet[] packets = new packet[total_num_packets];
 		for (int i = 0; i < total_num_packets; i++) {
 			int numBytes = Math.min(MAX_PAYLOAD, file_bytes.length - i * MAX_PAYLOAD);
