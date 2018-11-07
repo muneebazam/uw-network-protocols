@@ -133,6 +133,9 @@ public class Sender
 	}
 	
 	private static void send_packet(int i) throws Exception {
+		if (DEBUG) {
+			System.out.println("Attempting to send packet: " + i);
+		}
         byte[] data = packets[i].getUDPdata();
         DatagramSocket send_socket = new DatagramSocket();
         InetAddress clientIP = InetAddress.getByName(host_address);
@@ -147,7 +150,10 @@ public class Sender
 	private static void resend_packets() throws Exception {
         num_packets_ACKd_sem.acquire();
         next_packet_sem.acquire();
-        for (int i = num_packets_ACKd; i < next_packet; i++){
+        for (int i = num_packets_ACKd; i < next_packet; i++) {
+			if (DEBUG) {
+				System.out.println("Attempting to resend packet: " + i);
+			}
 			send_packet(i);
         }
         next_packet_sem.release();
@@ -215,9 +221,6 @@ public class Sender
 						System.out.println("Attempting to send the first packet and starting timer");
 					}
 					start_timer();
-				}
-				if (DEBUG) {
-					System.out.println("Attempting to send packet: " + next_packet);
 				}
 				send_packet(next_packet);
 				next_packet += 1;
