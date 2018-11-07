@@ -88,8 +88,10 @@ public class Sender
                 int seq_num = packet.parseUDPdata(ack_pkt.getData()).getSeqNum();
 				ack_log.println(seq_num);
 
+
 				if (DEBUG) {
 					System.out.println("Received an ACK for packet " + seq_num);
+					System.out.println("Number of packets ACKd so far: " + num_packets_ACKd);
 				}
 				
 				// perform sequence number specific action 
@@ -214,6 +216,7 @@ public class Sender
 		while (num_packets_ACKd < total_num_packets) {
 			num_packets_ACKd_sem.release();
 			next_packet_sem.acquire();
+			System.out.println("Next packet to be sent is: " + next_packet);
 			while (next_packet < total_num_packets && 
 				   (next_packet - num_packets_ACKd) < WINDOW_SIZE) {
 				if (num_packets_ACKd == 0 && next_packet == 0) {
