@@ -51,10 +51,10 @@ public class Sender
 		file.readFully(file_bytes);
 		file.close();
 		for (int i = 0; i < file_bytes.length; i++) {
+			System.out.println("ye");
 			System.out.println(file_bytes[i]);
 		}
-		double min_required_packets = file_bytes.length / MAX_PAYLOAD;
-		int total_num_packets = (int) Math.ceil(min_required_packets);
+		int total_num_packets = (int) Math.ceil((double) file_bytes.length / MAX_PAYLOAD);
 		System.out.println("number of packets are: " + total_num_packets);
 		packet[] packets = new packet[total_num_packets];
 		for (int i = 0; i < total_num_packets; i++) {
