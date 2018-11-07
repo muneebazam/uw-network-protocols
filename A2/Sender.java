@@ -216,7 +216,6 @@ public class Sender
 		while (num_packets_ACKd < total_num_packets) {
 			num_packets_ACKd_sem.release();
 			next_packet_sem.acquire();
-			System.out.println("Next packet to be sent is: " + next_packet);
 			while (next_packet < total_num_packets && 
 				   (next_packet - num_packets_ACKd) < WINDOW_SIZE) {
 				if (num_packets_ACKd == 0 && next_packet == 0) {
