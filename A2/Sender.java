@@ -45,7 +45,10 @@ public class Sender
 
 	private static packet[] create_packets_from_file() throws Exception {
 		File file = new File(file_name);
-        byte[] file_bytes = Files.readAllBytes(file.toPath());
+		byte[] file_bytes = Files.readAllBytes(file.toPath());
+		for (int i = 0; i < file_bytes.length; i++) {
+			System.out.println(file_bytes[i]);
+		}
 		double min_required_packets = file_bytes.length / MAX_PAYLOAD;
 		int total_num_packets = (int) Math.ceil(min_required_packets);
 		packet[] packets = new packet[total_num_packets];
@@ -79,7 +82,7 @@ public class Sender
 				ack_log.println(seq_num);
 				
 				// perform sequence number specific action 
-				if (seq_num == (num_packets_ACKd % MAX_SEQ_NUM + 1)){
+				if (seq_num == (num_packets_ACKd % MAX_SEQ_NUM)){
                 	num_packets_ACKd_sem.acquire();
 					num_packets_ACKd += 1;
 					num_packets_ACKd_sem.release();
@@ -91,7 +94,8 @@ public class Sender
             }
             timer.cancel();
 			ack_log.close();
-            num_packets_ACKd_sem.release();
+			num_packets_ACKd_sem.release();
+			System.exit(1);
         }
 
         public void run() {
@@ -168,18 +172,23 @@ public class Sender
 		seq_num_log = new PrintWriter(new FileWriter("./seqnum.log"));
 		timer = new Timer();
 		packets = create_packets_from_file();
+		System.out.println(packets);
 		receive_socket = new DatagramSocket(receive_port);
 
 		ReceiveACKs ack_receiver = new ReceiveACKs();
 		ack_receiver.start();
 
 		num_packets_ACKd_sem.acquire();
+		// num packets ackd = 0
+		// total num packets = 1
 		while (num_packets_ACKd < total_num_packets) {
+			System.out.println("inside the main thread while loop");
 			num_packets_ACKd_sem.release();
 			next_packet_sem.acquire();
 			while (next_packet < total_num_packets && 
 				   (next_packet - num_packets_ACKd) < WINDOW_SIZE) {
 				if (num_packets_ACKd == 0 && next_packet == 0) start_timer();
+				System.out.println("attempting to send packet: " + next_packet);
 				send_packet(next_packet);
 				next_packet += 1;
 			}
@@ -204,6 +213,7 @@ public class Sender
         packet EOT_ack_pkt = packet.parseUDPdata(EOT_ACK.getData());
 
 		if (EOT_ack_pkt.getType() == 2) {
+			System.out.println("received EOT packet");
             receive_socket.close();
 		}
 		System.exit(0);
