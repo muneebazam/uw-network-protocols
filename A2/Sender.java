@@ -186,6 +186,8 @@ public class Sender
 		num_packets_ACKd_sem.acquire();
 		// num packets ackd = 0
 		// total num packets = 1
+		System.out.println("number of packets ackD: " + num_packets_ACKd);
+		System.out.println("total num packets are: " + total_num_packets);
 		while (num_packets_ACKd < total_num_packets) {
 			System.out.println("inside the main thread while loop");
 			num_packets_ACKd_sem.release();
