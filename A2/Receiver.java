@@ -76,6 +76,7 @@ public class Receiver {
 				} else {
 					if (DEBUG) {
 						System.out.println("RECEIVER: Received a packet we were not expecting: " + seq_num);
+						System.out.println("RECEIVER: Expecting packet with seq_num: " + expected_seq_num);
 					}
 					packet ack;
 					if (expected_seq_num == 0) {
