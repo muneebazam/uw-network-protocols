@@ -66,7 +66,12 @@ public class Receiver {
 					expected_seq_num += 1;
 					expected_seq_num %= MAX_SEQ_NUM;
 				} else {
-					packet ack = packet.createACK((expected_seq_num - 1) % seq_num);
+					packet ack;
+					if (expected_seq_num == 0) {
+						ack = packet.createACK(0);
+					} else {
+						ack = packet.createACK((expected_seq_num - 1) % MAX_SEQ_NUM);
+					}
                 	send_packet(ack);
 				}
 			} else if (pkt.getType() == 2) {
