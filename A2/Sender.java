@@ -38,7 +38,7 @@ public class Sender
 	private static packet[] packets;
 
 	private static int num_packets_ACKd = 0;
-	private static int next_packet = 1;
+	private static int next_packet = 0;
 
 	// Semaphores to 'lock' the two variables above
 	private static Semaphore num_packets_ACKd_sem = new Semaphore(1, true);
