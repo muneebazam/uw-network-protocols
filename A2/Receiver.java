@@ -17,9 +17,6 @@ public class Receiver {
 	private static int receive_port;
 	private static String file_name;
 
-	// DEBUG MODE
-	private static boolean DEBUG = false;
-
 	private static void send_packet(packet pkt) throws Exception {
 		byte[] data = pkt.getUDPdata();
 		InetAddress client_address = InetAddress.getByName(host_address);
@@ -59,33 +56,20 @@ public class Receiver {
             int seq_num = pkt.getSeqNum();
 			arrival_log.println(seq_num);
 
-			if (DEBUG) {
-				System.out.println("RECEIVER: Received packet with seq_num " + seq_num);
-			}
-
 			// packet type specific behaviour 
 			if (pkt.getType() == 1) {
 				if (seq_num == expected_seq_num) {
-					if (DEBUG) {
-						System.out.println("RECEIVER: Received the expected_seq_num: " + expected_seq_num);
-					}
 					output_file.print(new String(pkt.getData()));
                 	send_packet(packet.createACK(seq_num));
 					expected_seq_num += 1;
 					expected_seq_num %= MAX_SEQ_NUM;
 				} else {
-					if (DEBUG) {
-						System.out.println("RECEIVER: Received a packet we were not expecting: " + seq_num);
-						System.out.println("RECEIVER: Expecting packet with seq_num: " + expected_seq_num);
-					}
 					if (expected_seq_num > 0) {
-						System.out.println("RECEIVER: Sending back ACK for latest seq_num: " + ((expected_seq_num - 1) % MAX_SEQ_NUM));
 						packet ack = packet.createACK((expected_seq_num - 1) % MAX_SEQ_NUM);
 						send_packet(ack);
 					}
 				}
 			} else if (pkt.getType() == 2) {
-				System.out.println("RECEIVER: Receieved EOT packet");
 				send_packet(packet.createEOT(seq_num));
 				break;
 			}			

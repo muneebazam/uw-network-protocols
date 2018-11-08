@@ -206,7 +206,6 @@ public class Sender
 		seq_num_log = new PrintWriter(new FileWriter("./seqnum.log"));
 		timer = new Timer();
 		packets = create_packets_from_file();
-		System.out.println(packets);
 		receive_socket = new DatagramSocket(receive_port);
 
 		ReceiveACKs ack_receiver = new ReceiveACKs();
