@@ -99,6 +99,10 @@ public class Sender
 				if (DEBUG) {
 					System.out.println("Received an ACK for packet " + seq_num);
 				}
+
+				if (num_packets_ACKd == total_num_packets) {
+					break;
+				}
 		
 				// perform sequence number specific action 
 				if (seq_num == (num_packets_ACKd % MAX_SEQ_NUM)){
@@ -110,9 +114,6 @@ public class Sender
 					System.out.println("Number of packets ACKd so far: " + num_packets_ACKd);
 					num_packets_ACKd = num_packets_ACKd + 1;
 					num_packets_ACKd_sem.release();
-					if (num_packets_ACKd == total_num_packets) {
-						break;
-					}
 					restart_timer();
 				}
             }
