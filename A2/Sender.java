@@ -41,7 +41,7 @@ public class Sender
 	private static int next_packet = 0;
 
 	// DEBUG MODE
-	private static boolean DEBUG = true;
+	private static boolean DEBUG = false;
 
 	// Semaphores to 'lock' the two variables above
 	private static Semaphore num_packets_ACKd_sem = new Semaphore(1, true);
@@ -236,8 +236,6 @@ public class Sender
 		if (DEBUG) {
 			System.out.println("made it to the EOT stage.");
 		}
-
-		timer.cancel();
 
 		// EOT Transmission
         DatagramSocket EOT_send_socket = new DatagramSocket();

@@ -18,7 +18,7 @@ public class Receiver {
 	private static String file_name;
 
 	// DEBUG MODE
-	private static boolean DEBUG = true;
+	private static boolean DEBUG = false;
 
 	private static void send_packet(packet pkt) throws Exception {
 		byte[] data = pkt.getUDPdata();
