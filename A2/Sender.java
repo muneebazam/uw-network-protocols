@@ -1,5 +1,4 @@
-/* Sender.java
- */
+// Sender program for Go-Back-N protocol
 
 import java.io.File;
 import java.io.FileInputStream;
@@ -65,10 +64,6 @@ public class Sender
 				throw new RuntimeException(e);
 			}
 		}
-
-		if (DEBUG) {
-			System.out.println("number of packets are: " + total_num_packets);
-		}
 		return packets;
 	}
 
@@ -96,24 +91,13 @@ public class Sender
 				}
 				next_packet_sem.release();
 
-				if (DEBUG) {
-					System.out.println("Received an ACK for packet " + seq_num);
-				}
-
 				if (num_packets_ACKd == total_num_packets) {
 					break;
 				}
 		
 				// perform sequence number specific action 
 				if (seq_num == (num_packets_ACKd % MAX_SEQ_NUM)){
-
-					if (DEBUG) {
-						System.out.println("Received an ACK for packet we were expecting: " + seq_num);
-					}
 					num_packets_ACKd_sem.acquire();
-					if (DEBUG) {
-						System.out.println("Number of packets ACKd so far: " + num_packets_ACKd);
-					}
 					num_packets_ACKd = num_packets_ACKd + 1;
 					num_packets_ACKd_sem.release();
 					restart_timer();
@@ -142,9 +126,6 @@ public class Sender
 	}
 	
 	private static void send_packet(int i) throws Exception {
-		if (DEBUG) {
-			System.out.println("Attempting to send packet: " + i);
-		}
         byte[] data = packets[i].getUDPdata();
         DatagramSocket send_socket = new DatagramSocket();
         InetAddress clientIP = InetAddress.getByName(host_address);
@@ -153,16 +134,13 @@ public class Sender
 		send_socket.close();
 		
 		// log the seq num
-		seq_num_log.println(i);
+		seq_num_log.println(i % MAX_SEQ_NUM);
 	}
 	
 	private static void resend_packets() throws Exception {
         num_packets_ACKd_sem.acquire();
         next_packet_sem.acquire();
         for (int i = num_packets_ACKd; i < next_packet; i++) {
-			if (DEBUG) {
-				System.out.println("Attempting to resend packet: " + i);
-			}
 			send_packet(i);
         }
         next_packet_sem.release();
@@ -220,9 +198,6 @@ public class Sender
 			while (next_packet < total_num_packets && 
 				   (next_packet - num_packets_ACKd) < WINDOW_SIZE) {
 				if (num_packets_ACKd == 0 && next_packet == 0) {
-					if (DEBUG) {
-						System.out.println("Attempting to send the first packet and starting timer");
-					}
 					start_timer();
 				}
 				send_packet(next_packet);
@@ -233,10 +208,6 @@ public class Sender
 		}
 		num_packets_ACKd_sem.release();
 		seq_num_log.close();
-
-		if (DEBUG) {
-			System.out.println("made it to the EOT stage.");
-		}
 
 		// EOT Transmission
         DatagramSocket EOT_send_socket = new DatagramSocket();
