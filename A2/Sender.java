@@ -237,12 +237,11 @@ public class Sender
 		}
 
 		timer.cancel();
-		ack_receiver.stop();
 
 		// EOT Transmission
         DatagramSocket EOT_send_socket = new DatagramSocket();
         InetAddress clientIP = InetAddress.getByName(host_address);
-        byte[] data = packet.createEOT(total_num_packets + 1).getUDPdata();
+        byte[] data = packet.createEOT(total_num_packets % MAX_SEQ_NUM).getUDPdata();
 		DatagramPacket EOT_pkt = new DatagramPacket(data, data.length, clientIP, send_port);
 		EOT_send_socket.send(EOT_pkt);
 		EOT_send_socket.close();
