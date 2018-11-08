@@ -111,7 +111,9 @@ public class Sender
 						System.out.println("Received an ACK for packet we were expecting: " + seq_num);
 					}
 					num_packets_ACKd_sem.acquire();
-					System.out.println("Number of packets ACKd so far: " + num_packets_ACKd);
+					if (DEBUG) {
+						System.out.println("Number of packets ACKd so far: " + num_packets_ACKd);
+					}
 					num_packets_ACKd = num_packets_ACKd + 1;
 					num_packets_ACKd_sem.release();
 					restart_timer();
