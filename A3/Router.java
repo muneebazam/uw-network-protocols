@@ -54,7 +54,7 @@ class Router {
         // send_socket.send(data_pkt);
         // send_socket.close();
 
-        Socket clientSocket = new Socket("localhost", router_port);
+        Socket clientSocket = new Socket(nse_host, nse_port);
         DataOutputStream d_out = new DataOutputStream(clientSocket.getOutputStream());
         DataInputStream d_in = new DataInputStream(clientSocket.getInputStream());
         
