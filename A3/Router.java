@@ -54,11 +54,14 @@ class Router {
         send_socket.send(data_pkt);
         send_socket.close();
 
-        byte[] eot = new byte[1024];
+        System.out.println("some problem maybe here");
+        byte[] eot = new byte[4096];
         DatagramPacket eot_ack = new DatagramPacket(eot, eot.length);
         DatagramSocket receive_socket = new DatagramSocket(router_port);
         receive_socket.receive(eot_ack);
+        System.out.println("or here");
         receive_socket.close();
+        
     }
 
 }
