@@ -4,10 +4,7 @@ JC = javac
 .java.class:
 	$(JC) $(JFLAGS) $*.java
 
-CLASSES = \
-	Receiver.java \
-	Sender.java \
-	packet.java
+CLASSES = Router.java
 
 default: classes
 
