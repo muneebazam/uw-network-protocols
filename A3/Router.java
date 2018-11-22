@@ -1,6 +1,4 @@
-import java.net.DatagramPacket;
-import java.net.DatagramSocket;
-import java.net.InetAddress;
+import java.net.*;
 import java.io.PrintWriter;
 import java.util.HashMap;
 
@@ -46,21 +44,32 @@ class Router {
         String file_name = "router" + router_id + ".log";
         PrintWriter log = new PrintWriter(file_name);
 
-        int[] int_data = {router_id};
-        byte[] data = convertIntegersToBytes(int_data);
-        DatagramSocket send_socket = new DatagramSocket();
-        InetAddress clientIP = InetAddress.getByName(nse_host);
-        DatagramPacket data_pkt = new DatagramPacket(data, data.length, clientIP, nse_port);
-        send_socket.send(data_pkt);
-        send_socket.close();
+        // DatagramSocket send_socket = new DatagramSocket();
+        // InetAddress clientIP = InetAddress.getByName(nse_host);
+        // DatagramPacket data_pkt = new DatagramPacket(data, data.length, clientIP, nse_port);
+        // send_socket.send(data_pkt);
+        // send_socket.close();
 
-        System.out.println("some problem maybe here");
-        byte[] eot = new byte[4096];
-        DatagramPacket eot_ack = new DatagramPacket(eot, eot.length);
-        DatagramSocket receive_socket = new DatagramSocket(router_port);
-        receive_socket.receive(eot_ack);
-        System.out.println("or here");
-        receive_socket.close();
+        Socket clientSocket = new Socket("localhost", router_port);
+        DataOutputStream outToServer = new DataOutputStream(clientSocket.getOutputStream());
+        BufferedReader inFromServer = new BufferedReader(new InputStreamReader(clientSocket.getInputStream()));
+        
+        outToServer.writeByte(router_id);
+        outToServer.flush();
+
+        byte messageType = dIn.readByte();
+
+        clientSocket.close();
+
+
+
+        // System.out.println("some problem maybe here");
+        // byte[] eot = new byte[4096];
+        // DatagramPacket eot_ack = new DatagramPacket(eot, eot.length);
+        // DatagramSocket receive_socket = new DatagramSocket(router_port);
+        // receive_socket.receive(eot_ack);
+        // System.out.println("or here");
+        // receive_socket.close();
         
     }
 
