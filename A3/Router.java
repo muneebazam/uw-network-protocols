@@ -54,13 +54,13 @@ class Router {
         // send_socket.close();
 
         Socket clientSocket = new Socket("localhost", router_port);
-        DataOutputStream outToServer = new DataOutputStream(clientSocket.getOutputStream());
-        BufferedReader inFromServer = new BufferedReader(new InputStreamReader(clientSocket.getInputStream()));
+        DataOutputStream d_out = new DataOutputStream(clientSocket.getOutputStream());
+        DataInputStream d_in = new DataInputStream(clientSocket.getInputStream());
         
-        outToServer.writeByte(router_id);
-        outToServer.flush();
+        d_out.writeByte(router_id);
+        d_out.flush();
 
-        byte messageType = inFromServer.readByte();
+        byte messageType = d_in.readByte();
 
         clientSocket.close();
 
