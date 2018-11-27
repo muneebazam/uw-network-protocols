@@ -48,7 +48,7 @@ class Router {
         String file_name = "router" + router_id + ".log";
         PrintWriter log = new PrintWriter(file_name);
 
-        int[] int_data = [router_id];
+        int[] int_data = {router_id};
         byte[] data = convertIntegersToBytes(int_data)
         DatagramSocket socket = new DatagramSocket(router_port);
         InetAddress clientIP = InetAddress.getByName(nse_host);
