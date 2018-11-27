@@ -48,32 +48,17 @@ class Router {
         String file_name = "router" + router_id + ".log";
         PrintWriter log = new PrintWriter(file_name);
 
-        // DatagramSocket send_socket = new DatagramSocket();
-        // InetAddress clientIP = InetAddress.getByName(nse_host);
-        // DatagramPacket data_pkt = new DatagramPacket(data, data.length, clientIP, nse_port);
-        // send_socket.send(data_pkt);
-        // send_socket.close();
+        DatagramSocket socket = new DatagramSocket(router_port);
+        InetAddress clientIP = InetAddress.getByName(nse_host);
+        DatagramPacket data_pkt = new DatagramPacket(data, data.length, clientIP, nse_port);
+        socket.send(data_pkt);
 
-        Socket clientSocket = new Socket(nse_host, nse_port);
-        DataOutputStream d_out = new DataOutputStream(clientSocket.getOutputStream());
-        DataInputStream d_in = new DataInputStream(clientSocket.getInputStream());
-        
-        d_out.writeByte(router_id);
-        d_out.flush();
-
-        byte messageType = d_in.readByte();
-
-        clientSocket.close();
-
-
-
-        // System.out.println("some problem maybe here");
-        // byte[] eot = new byte[4096];
-        // DatagramPacket eot_ack = new DatagramPacket(eot, eot.length);
-        // DatagramSocket receive_socket = new DatagramSocket(router_port);
-        // receive_socket.receive(eot_ack);
-        // System.out.println("or here");
-        // receive_socket.close();
+        System.out.println("some problem maybe here");
+        byte[] eot = new byte[4096];
+        DatagramPacket eot_ack = new DatagramPacket(eot, eot.length);
+        socket.receive(eot_ack);
+        System.out.println("or here");
+        socket.close();
         
     }
 
