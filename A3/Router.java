@@ -139,13 +139,12 @@ class Router {
 
             System.out.println("Received an LS_PDU from " + ls_pdu_sender + " via link id " + ls_pdu_via + " that " + ls_pdu_router_id + " has a link with id " + ls_pdu_link_id + " with cost " + ls_pdu_link_cost);
 
-            for (int i = 0; i < recv_hellos.size(); i++) {
-                if ((int) recv_hellos.get(i) == ls_pdu_sender) {
+            for (int i = 0; i < link_ids.length; i++) {
+                if ((int) link_ids[i] == ls_pdu_via) {
                     continue;
                 } else {
-                    // send LS_PDU each time
-                    System.out.println("Sending an LS_PDU to " + (int) recv_hellos.get(i) + " from router " + router_id + " containing link id " + ls_pdu_link_id + " with cost " + ls_pdu_link_cost + " through link " + ls_pdu_via);
-                    int[] recv_ls_pdu_data = {router_id, ls_pdu_router_id, ls_pdu_link_id, ls_pdu_link_cost, ls_pdu_via};
+                    System.out.println("Sending an LS_PDU from router " + router_id + " stating that router " + ls_pdu_router_id + " has link " + ls_pdu_link_id + " with cost " + ls_pdu_link_cost + " . Received through link " + link_ids[i]);
+                    int[] recv_ls_pdu_data = {router_id, ls_pdu_router_id, ls_pdu_link_id, ls_pdu_link_cost, link_ids[i]};
                     byte[] recv_ls_pdu_pkt = convertIntegersToBytes(recv_ls_pdu_data);
                     DatagramPacket ls_pdu_pkt_propogate = new DatagramPacket(recv_ls_pdu_pkt, recv_ls_pdu_pkt.length, clientIP, nse_port);
                     socket.send(ls_pdu_pkt_propogate);
