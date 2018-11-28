@@ -4,7 +4,10 @@ import java.io.BufferedReader;
 import java.io.DataOutputStream;
 import java.io.DataInputStream;
 import java.io.InputStreamReader;
+import java.nio.ByteBuffer;
+import java.nio.ByteOrder;
 import java.util.HashMap;
+import java.lang.IndexOutOfBoundsException;
 
 class Router {
 
@@ -50,18 +53,51 @@ class Router {
 
         int[] int_data = {router_id};
         byte[] data = convertIntegersToBytes(int_data);
+
+        // add a check here or try catch 
         DatagramSocket socket = new DatagramSocket(router_port);
         InetAddress clientIP = InetAddress.getByName(nse_host);
         DatagramPacket data_pkt = new DatagramPacket(data, data.length, clientIP, nse_port);
         socket.send(data_pkt);
 
-        System.out.println("some problem maybe here");
         byte[] eot = new byte[4096];
-        DatagramPacket eot_ack = new DatagramPacket(eot, eot.length);
-        socket.receive(eot_ack);
-        System.out.println("or here");
+        DatagramPacket data_in = new DatagramPacket(eot, eot.length);
+        socket.receive(data_in);
         socket.close();
-        
-    }
 
+        System.out.println("about to parse the data");
+        ByteBuffer circuit_db = ByteBuffer.wrap(data_in.getData()).order(ByteOrder.LITTLE_ENDIAN);
+
+
+        int nbr_routers = (int) circuit_db.getInt(0);
+        System.out.println("the number of links attached to this router are: " + nbr_routers);
+
+        int link_id;
+        int link_cost;
+        int offset = 4;
+
+        for (int i = 0; i < 5; i++) {
+            try {
+                link_id = (int) circuit_db.getInt(offset);
+                offset += 4;
+                link_cost = (int) circuit_db.getInt(offset);
+                offset += 4;
+                System.out.println("The link id is " + link_id + " and its cost is " + link_cost);
+            } catch (IndexOutOfBoundsException e) {
+                System.out.println("We have no more links attached to this router");
+                break;
+            }
+
+        }
+
+
+        // while (data.available() > 0)  {
+        //     int tokenID = data.readInt();
+        //     int type = data.readInt();
+        //     int length = data.readInt();
+        //     byte[] array = new byte[length];
+        //     data.readFully(array);
+        //     doSomethingWith(tokenID, type, array);
+        // }  
+    }
 }
