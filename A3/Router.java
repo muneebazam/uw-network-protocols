@@ -93,8 +93,8 @@ class Router {
         }
 
         while (true) {
-            byte[] eot = new byte[4096];
-            DatagramPacket hello_pdu_in = new DatagramPacket(eot, eot.length);
+            byte[] hello_pdu_buffer = new byte[4096];
+            DatagramPacket hello_pdu_in = new DatagramPacket(hello_pdu_buffer, hello_pdu_buffer.length);
             socket.receive(hello_pdu_in);
             ByteBuffer ls_pdu = ByteBuffer.wrap(hello_pdu_in.getData()).order(ByteOrder.LITTLE_ENDIAN);
             System.out.println("Recieved a HELLO_PDU from " + (int) ls_pdu.getInt(0));
