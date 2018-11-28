@@ -63,7 +63,6 @@ class Router {
         byte[] eot = new byte[4096];
         DatagramPacket data_in = new DatagramPacket(eot, eot.length);
         socket.receive(data_in);
-        socket.close();
 
         System.out.println("about to parse the data");
         ByteBuffer circuit_db = ByteBuffer.wrap(data_in.getData()).order(ByteOrder.LITTLE_ENDIAN);
@@ -72,22 +71,33 @@ class Router {
         int nbr_routers = (int) circuit_db.getInt(0);
         System.out.println("the number of links attached to this router are: " + nbr_routers);
 
-        int link_id;
-        int link_cost;
         int offset = 4;
+        int link_ids[nbr_routers];
+        int link_costs[nbr_routers];
 
-        for (int i = 0; i < 5; i++) {
-            try {
-                link_id = (int) circuit_db.getInt(offset);
-                offset += 4;
-                link_cost = (int) circuit_db.getInt(offset);
-                offset += 4;
-                System.out.println("The link id is " + link_id + " and its cost is " + link_cost);
-            } catch (IndexOutOfBoundsException e) {
-                System.out.println("We have no more links attached to this router");
-                break;
-            }
+        for (int i = 0; i < nbr_routers; i++) {
+            link_ids[i] = (int) circuit_db.getInt(offset);
+            offset += 4;
+            link_costs[i] = (int) circuit_db.getInt(offset);
+            offset += 4;
+            System.out.println("The link id is " + link_ids[i] + " and its cost is " + link_cost[i]);
+        }
 
+
+        for (int i = 0; i < nbr_routers; i++) {
+            System.out.println("Sending HELLO PDU to router number " + link_ids[i]);
+            int[] int_data = {router_id, link_ids[i]};
+            byte[] data = convertIntegersToBytes(int_data);
+            DatagramPacket data_pkt = new DatagramPacket(data, data.length, clientIP, nse_port);
+            socket.send(data_pkt);
+        }
+
+        while (1) {
+            byte[] eot = new byte[4096];
+            DatagramPacket data_in = new DatagramPacket(eot, eot.length);
+            socket.receive(data_in);
+            ByteBuffer ls_pdu = ByteBuffer.wrap(data_in.getData()).order(ByteOrder.LITTLE_ENDIAN);
+            System.out.println("Recieved a HELLO_PDU from " + (int) hello_pdu.getInt(0));
         }
 
 
