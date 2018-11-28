@@ -80,24 +80,24 @@ class Router {
             offset += 4;
             link_costs[i] = (int) circuit_db.getInt(offset);
             offset += 4;
-            System.out.println("The link id is " + link_ids[i] + " and its cost is " + link_cost[i]);
+            System.out.println("The link id is " + link_ids[i] + " and its cost is " + link_costs[i]);
         }
 
 
         for (int i = 0; i < nbr_routers; i++) {
             System.out.println("Sending HELLO PDU to router number " + link_ids[i]);
-            int[] int_data = {router_id, link_ids[i]};
-            byte[] data = convertIntegersToBytes(int_data);
-            DatagramPacket data_pkt = new DatagramPacket(data, data.length, clientIP, nse_port);
-            socket.send(data_pkt);
+            int[] hello_pdu_data = {router_id, link_ids[i]};
+            byte[] hello_pdu = convertIntegersToBytes(hello_pdu_data);
+            DatagramPacket hello_pdu_pkt = new DatagramPacket(hello_pdu, hello_pdu.length, clientIP, nse_port);
+            socket.send(hello_pdu_pkt);
         }
 
-        while (1) {
+        while (true) {
             byte[] eot = new byte[4096];
-            DatagramPacket data_in = new DatagramPacket(eot, eot.length);
-            socket.receive(data_in);
-            ByteBuffer ls_pdu = ByteBuffer.wrap(data_in.getData()).order(ByteOrder.LITTLE_ENDIAN);
-            System.out.println("Recieved a HELLO_PDU from " + (int) hello_pdu.getInt(0));
+            DatagramPacket hello_pdu_in = new DatagramPacket(eot, eot.length);
+            socket.receive(hello_pdu_in);
+            ByteBuffer ls_pdu = ByteBuffer.wrap(hello_pdu_in.getData()).order(ByteOrder.LITTLE_ENDIAN);
+            System.out.println("Recieved a HELLO_PDU from " + (int) ls_pdu.getInt(0));
         }
 
 
