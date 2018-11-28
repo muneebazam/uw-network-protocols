@@ -72,8 +72,8 @@ class Router {
         System.out.println("the number of links attached to this router are: " + nbr_routers);
 
         int offset = 4;
-        int link_ids[nbr_routers];
-        int link_costs[nbr_routers];
+        int link_ids[] = new int[nbr_routers];
+        int link_costs[] = new int[nbr_routers];
 
         for (int i = 0; i < nbr_routers; i++) {
             link_ids[i] = (int) circuit_db.getInt(offset);
