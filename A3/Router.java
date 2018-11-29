@@ -149,6 +149,7 @@ class Router {
             String str_key = "" + router_id + link_ids[i] + link_costs[i];
             int key = Integer.parseInt(str_key);
             topology.put(key, temp);
+            updateNumLinks(router_id);
             System.out.println("The link id is " + link_ids[i] + " and its cost is " + link_costs[i] + "\n");
         }
 
