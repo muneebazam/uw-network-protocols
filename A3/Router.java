@@ -41,6 +41,8 @@ class Router {
     static int router3_num_links = 0;
     static int router4_num_links = 0;
     static int router5_num_links = 0;
+    static HashMap<Integer, Tuple> topology = new HashMap<Integer, Tuple>();
+
 
     public static void printTopology(HashMap<Integer, Tuple> topology) {
         System.out.println("R" + router_id + " -> R1 nbr link " + router1_num_links);
@@ -190,8 +192,6 @@ class Router {
         int ls_pdu_link_id;
         int ls_pdu_link_cost;
         int ls_pdu_via;
-
-        HashMap<Integer, Tuple> topology = new HashMap<Integer, Tuple>();
 
         while (true) {
             byte[] ls_pdu_buffer = new byte[4096];
