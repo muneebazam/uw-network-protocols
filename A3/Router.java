@@ -44,10 +44,10 @@ class Router {
 
     public static void printTopology(HashMap<Integer, Tuple> topology) {
         System.out.println("R" + router_id + " -> R1 nbr link " + router1_num_links);
-        System.out.println("R" + router_id + " -> R2 nbr link " + router1_num_links);
-        System.out.println("R" + router_id + " -> R3 nbr link " + router1_num_links);
-        System.out.println("R" + router_id + " -> R4 nbr link " + router1_num_links);
-        System.out.println("R" + router_id + " -> R5 nbr link " + router1_num_links);
+        System.out.println("R" + router_id + " -> R2 nbr link " + router2_num_links);
+        System.out.println("R" + router_id + " -> R3 nbr link " + router3_num_links);
+        System.out.println("R" + router_id + " -> R4 nbr link " + router4_num_links);
+        System.out.println("R" + router_id + " -> R5 nbr link " + router5_num_links);
 
         Set set = topology.entrySet();
         Iterator iterator = set.iterator();
@@ -143,6 +143,10 @@ class Router {
             offset += 4;
             link_costs[i] = (int) circuit_db.getInt(offset);
             offset += 4;
+            Tuple temp = new Tuple(router_id, link_ids[i], link_costs[i]);
+            String str_key = "" + router_id + link_ids[i] + link_costs[i];
+            int key = Integer.parseInt(str_key);
+            topology.put(key, temp);
             System.out.println("The link id is " + link_ids[i] + " and its cost is " + link_costs[i] + "\n");
         }
 
