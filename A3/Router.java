@@ -9,6 +9,12 @@ import java.nio.ByteOrder;
 import java.util.HashMap;
 import java.lang.IndexOutOfBoundsException;
 import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.Map;
+import java.util.Iterator;
+import java.util.Set;
+
+// ADD CHECKS FOR BIND EXCEPTION OR BETTER ERROR MESSAGING 
 
 class Tuple {
 
@@ -36,16 +42,20 @@ class Router {
     static int router4_num_links = 0;
     static int router5_num_links = 0;
 
-    public static void printTopology(ArrayList<Tuple> topology) {
+    public static void printTopology(HashMap<Integer, Tuple> topology) {
         System.out.println("R" + router_id + " -> R1 nbr link " + router1_num_links);
         System.out.println("R" + router_id + " -> R2 nbr link " + router1_num_links);
         System.out.println("R" + router_id + " -> R3 nbr link " + router1_num_links);
         System.out.println("R" + router_id + " -> R4 nbr link " + router1_num_links);
         System.out.println("R" + router_id + " -> R5 nbr link " + router1_num_links);
 
-        for (int i = 0; i < topology.size(); i++) {
-            Tuple temp = topology.get(i);
-            System.out.println("R" + router_id + " -> R" + temp.router_id + " link " + temp.link_id + " cost " + temp.link_cost);
+        Set set = topology.entrySet();
+        Iterator iterator = set.iterator();
+        while(iterator.hasNext()) {
+            Map.Entry entry = (Map.Entry)iterator.next();
+            System.out.print("R" + router_id + " -> ");
+            Tuple temp = entry.getValue();
+            System.out.println("" + temp.router_id + " link " + temp.link_id + " cost " + temp.link_cost);
         }
     }
 
@@ -177,7 +187,7 @@ class Router {
         int ls_pdu_link_cost;
         int ls_pdu_via;
 
-        ArrayList<Tuple> topology = new ArrayList<Tuple>();
+        HashMap<Integer, Tuple> topology = new HashMap<Integer, Tuple>();
 
         while (true) {
             byte[] ls_pdu_buffer = new byte[4096];
@@ -194,10 +204,12 @@ class Router {
             System.out.println("Received an LS_PDU from router " + ls_pdu_sender + " via link id " + ls_pdu_via + " that " + ls_pdu_router_id + " has a link with id " + ls_pdu_link_id + " with cost " + ls_pdu_link_cost + "\n");
 
             Tuple temp = new Tuple(ls_pdu_router_id, ls_pdu_link_id, ls_pdu_link_cost);
-            if (topology.contains(temp)) {
+            String str_key = "" + ls_pdu_router_id + ls_pdu_link_id + ls_pdu_link_cost;
+            int key = Integer.parseInt(str_key);
+            if (!topology.containsKey(key)) {
                 printTopology(topology);
             } else {
-                topology.add(temp);
+                topology.put(key, temp);
                 updateNumLinks(ls_pdu_router_id);
                 for (int i = 0; i < link_ids.length; i++) {
                     if ((int) link_ids[i] == ls_pdu_via) {
