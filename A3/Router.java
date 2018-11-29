@@ -206,7 +206,7 @@ class Router {
             Tuple temp = new Tuple(ls_pdu_router_id, ls_pdu_link_id, ls_pdu_link_cost);
             String str_key = "" + ls_pdu_router_id + ls_pdu_link_id + ls_pdu_link_cost;
             int key = Integer.parseInt(str_key);
-            if (!topology.containsKey(key)) {
+            if (topology.containsKey(key)) {
                 printTopology(topology);
             } else {
                 topology.put(key, temp);
