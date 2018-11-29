@@ -10,6 +10,19 @@ import java.util.HashMap;
 import java.lang.IndexOutOfBoundsException;
 import java.util.ArrayList;
 
+class Tuple {
+
+    public int router_id;
+    public int link_id;
+    public int link_cost;
+
+    Tuple(int a, int b, int c) {
+        router_id = a;
+        link_id = b;
+        link_cost = c;
+    }
+}
+
 class Router {
 
     static final int NBR_ROUTER = 5;
@@ -17,6 +30,46 @@ class Router {
     static int nse_port;
     static int router_port;
     static String nse_host;
+    static int router1_num_links = 0;
+    static int router2_num_links = 0;
+    static int router3_num_links = 0;
+    static int router4_num_links = 0;
+    static int router5_num_links = 0;
+
+    public static void printTopology(ArrayList<Tuple> topology) {
+        System.out.println("R" + router_id + " -> R1 nbr link " + router1_num_links);
+        System.out.println("R" + router_id + " -> R2 nbr link " + router1_num_links);
+        System.out.println("R" + router_id + " -> R3 nbr link " + router1_num_links);
+        System.out.println("R" + router_id + " -> R4 nbr link " + router1_num_links);
+        System.out.println("R" + router_id + " -> R5 nbr link " + router1_num_links);
+
+        for (int i = 0; i < topology.size(); i++) {
+            Tuple temp = topology.get(i);
+            System.out.println("R" + router_id + " -> R" + temp.router_id + " link " + temp.link_id + " cost " + temp.link_cost);
+        }
+    }
+
+    public static void updateNumLinks(int router_id) {
+        switch(router_id) {
+            case 1: 
+                router1_num_links += 1;
+                break;
+            case 2:
+                router2_num_links += 1;
+                break;
+            case 3:
+                router3_num_links += 1;
+                break;
+            case 4:
+                router4_num_links += 1;
+                break;
+            case 5:
+                router5_num_links += 1;
+                break;
+            default:
+                break;
+        }
+    }
 
     public static byte[] convertIntegersToBytes(int[] integers) {
         if (integers != null) {
@@ -65,7 +118,6 @@ class Router {
         DatagramPacket data_in = new DatagramPacket(eot, eot.length);
         socket.receive(data_in);
 
-        System.out.println("about to parse the data");
         ByteBuffer circuit_db = ByteBuffer.wrap(data_in.getData()).order(ByteOrder.LITTLE_ENDIAN);
 
 
@@ -111,7 +163,7 @@ class Router {
             
             for (int j = 0; j < nbr_routers; j++) {
                 // send LS_PDU each time
-                System.out.println("Sending an LS_PDU to " + recv_router_id + " from router " + router_id + " containing link id " + link_ids[j] + " with cost " + link_costs[j] + " through link " + recv_link_id + "\n");
+                System.out.println("Sending an LS_PDU to router " + recv_router_id + " from router " + router_id + " containing link id " + link_ids[j] + " with cost " + link_costs[j] + " through link " + recv_link_id + "\n");
                 int[] ls_pdu_data = {router_id, router_id, link_ids[j], link_costs[j], recv_link_id};
                 byte[] ls_pdu_send = convertIntegersToBytes(ls_pdu_data);
                 DatagramPacket ls_pdu_pkt = new DatagramPacket(ls_pdu_send, ls_pdu_send.length, clientIP, nse_port);
@@ -124,6 +176,8 @@ class Router {
         int ls_pdu_link_id;
         int ls_pdu_link_cost;
         int ls_pdu_via;
+
+        ArrayList<Tuple> topology = new ArrayList<Tuple>();
 
         while (true) {
             byte[] ls_pdu_buffer = new byte[4096];
@@ -139,16 +193,23 @@ class Router {
 
             System.out.println("Received an LS_PDU from router " + ls_pdu_sender + " via link id " + ls_pdu_via + " that " + ls_pdu_router_id + " has a link with id " + ls_pdu_link_id + " with cost " + ls_pdu_link_cost + "\n");
 
-            for (int i = 0; i < link_ids.length; i++) {
-                if ((int) link_ids[i] == ls_pdu_via) {
-                    continue;
-                } else {
-                    System.out.println("Sending an LS_PDU from router " + router_id + " stating that router " + ls_pdu_router_id + " has link " + ls_pdu_link_id + " with cost " + ls_pdu_link_cost + " . Received through link " + link_ids[i] + "\n");
-                    int[] recv_ls_pdu_data = {router_id, ls_pdu_router_id, ls_pdu_link_id, ls_pdu_link_cost, link_ids[i]};
-                    byte[] recv_ls_pdu_pkt = convertIntegersToBytes(recv_ls_pdu_data);
-                    DatagramPacket ls_pdu_pkt_propogate = new DatagramPacket(recv_ls_pdu_pkt, recv_ls_pdu_pkt.length, clientIP, nse_port);
-                    socket.send(ls_pdu_pkt_propogate);
-                }
+            Tuple temp = new Tuple(ls_pdu_router_id, ls_pdu_link_id, ls_pdu_link_cost);
+            if (topology.contains(temp)) {
+                printTopology(topology);
+            } else {
+                topology.add(temp);
+                updateNumLinks(ls_pdu_router_id);
+                for (int i = 0; i < link_ids.length; i++) {
+                    if ((int) link_ids[i] == ls_pdu_via) {
+                        continue;
+                    } else {
+                        System.out.println("Sending an LS_PDU from router " + router_id + " stating that router " + ls_pdu_router_id + " has link " + ls_pdu_link_id + " with cost " + ls_pdu_link_cost + " . Sending through link " + link_ids[i] + "\n");
+                        int[] recv_ls_pdu_data = {router_id, ls_pdu_router_id, ls_pdu_link_id, ls_pdu_link_cost, link_ids[i]};
+                        byte[] recv_ls_pdu_pkt = convertIntegersToBytes(recv_ls_pdu_data);
+                        DatagramPacket ls_pdu_pkt_propogate = new DatagramPacket(recv_ls_pdu_pkt, recv_ls_pdu_pkt.length, clientIP, nse_port);
+                        socket.send(ls_pdu_pkt_propogate);
+                    }
+                }  
             }
         }
     }
