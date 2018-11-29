@@ -55,7 +55,7 @@ class Router {
             Map.Entry entry = (Map.Entry)iterator.next();
             System.out.print("R" + router_id + " -> ");
             Tuple temp = (Tuple) entry.getValue();
-            System.out.println("" + temp.router_id + " link " + temp.link_id + " cost " + temp.link_cost);
+            System.out.println("R" + temp.router_id + " link " + temp.link_id + " cost " + temp.link_cost);
         }
     }
 
