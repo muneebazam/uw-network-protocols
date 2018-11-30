@@ -334,6 +334,7 @@ class Router {
 
         Node node = new Node(router_id);
         graph.addNode(node);
+        nodeList.add(router_id);
 
         for (int i = 0; i < nbr_routers; i++) {
             byte[] hello_pdu_buffer = new byte[4096];
@@ -391,7 +392,7 @@ class Router {
             } else {
                 if (!nodeList.contains(ls_pdu_router_id)) {
                     nodeList.add(ls_pdu_router_id);
-                    Node node = new Node(ls_pdu_router_id);
+                    node = new Node(ls_pdu_router_id);
                     graph.addNode(node);
                 }
                 topology.put(key, temp);
