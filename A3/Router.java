@@ -144,7 +144,7 @@ class Router {
             Iterator iterator = set.iterator();
             System.out.print("Adjacent Nodes:");
             while(iterator.hasNext()) {
-                Map.Entry node = (Map.Entry) iterator.next();
+                Node node = (Node) iterator.next();
                 System.out.print(" " + node.id);
             }
             System.out.print("\n");
