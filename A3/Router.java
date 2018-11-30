@@ -331,6 +331,7 @@ class Router {
         int recv_link_id;
 
         Graph graph = new Graph();
+        ArrayList nodeList = new ArrayList();
 
         Node node = new Node(router_id);
         graph.addNode(node);
@@ -366,8 +367,6 @@ class Router {
         int ls_pdu_link_id;
         int ls_pdu_link_cost;
         int ls_pdu_via;
-
-        ArrayList nodeList = new ArrayList();
 
         while (true) {
             byte[] ls_pdu_buffer = new byte[4096];
