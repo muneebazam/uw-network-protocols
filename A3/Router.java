@@ -233,9 +233,11 @@ class Router {
 
         for (Node n: graph.nodes) {
             if (n.id == routerA_id) {
+                System.out.println("found node: " + routerA_id);
                 temp1 = n;
             }
             if (n.id == routerB_id) {
+                System.out.println("found node: " + routerB_id);
                 temp2 = n;
             }
         }
