@@ -366,6 +366,8 @@ class Router {
         int ls_pdu_link_cost;
         int ls_pdu_via;
 
+        ArrayList nodeList = new ArrayList();
+
         while (true) {
             byte[] ls_pdu_buffer = new byte[4096];
             DatagramPacket ls_pdu_in = new DatagramPacket(ls_pdu_buffer, ls_pdu_buffer.length);
@@ -387,6 +389,11 @@ class Router {
                 printTopology(topology);
                 printGraph(graph);
             } else {
+                if (!nodeList.contains(ls_pdu_router_id)) {
+                    nodeList.add(ls_pdu_router_id);
+                    Node node = new Node(ls_pdu_router_id);
+                    graph.addNode(node);
+                }
                 topology.put(key, temp);
                 updateNumLinks(ls_pdu_router_id);
                 findDestinations(graph, topology);
