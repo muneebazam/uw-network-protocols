@@ -332,6 +332,9 @@ class Router {
 
         Graph graph = new Graph();
 
+        Node node = new Node(router_id);
+        graph.addNode(node);
+
         for (int i = 0; i < nbr_routers; i++) {
             byte[] hello_pdu_buffer = new byte[4096];
             DatagramPacket hello_pdu_in = new DatagramPacket(hello_pdu_buffer, hello_pdu_buffer.length);
