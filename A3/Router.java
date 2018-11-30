@@ -212,7 +212,7 @@ class Router {
                     checked.add(tuple.link_id);
                     routerA_id = tuple.router_id;
                     routerA_link = tuple.link_id;
-
+                    continue;
                 }
                 if (!matched.contains(tuple.link_id) && tuple.link_id == routerA_link) {
                     // found a pair
