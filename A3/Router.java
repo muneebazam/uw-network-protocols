@@ -348,9 +348,6 @@ class Router {
             recv_hellos.add(recv_router_id);
 
             System.out.println("Recieved a HELLO_PDU from router " + recv_router_id + " through link " + recv_link_id + "\n");
-
-            node = new Node(recv_router_id);
-            graph.addNode(node);
             
             for (int j = 0; j < nbr_routers; j++) {
                 // send LS_PDU each time
