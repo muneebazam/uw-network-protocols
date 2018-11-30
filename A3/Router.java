@@ -52,8 +52,8 @@ class Graph {
  
     public Set<Node> nodes = new HashSet<>();
      
-    public void addNode(Node nodeA) {
-        nodes.add(nodeA);
+    public void addNode(Node node) {
+        nodes.add(node);
     }
 
     public static Node getLowestDistanceNode(Set<Node> unsettledNodes) {
@@ -135,7 +135,21 @@ class Router {
     static HashMap<Integer, Tuple> topology = new HashMap<Integer, Tuple>();
     static ArrayList matched = new ArrayList();
 
-
+    public static void printGraph(Graph graph) {
+        for (Node n : graph.nodes) {
+            System.out.println("Node: " + n.id);
+            Map<Node, Integer> neighbors = n.adjacentNodes;
+            Set set = neighbors.entrySet();
+            Iterator iterator = set.iterator();
+            System.out.print("Adjacent Nodes:");
+            while(iterator.hasNext()) {
+                Map.Entry entry = (Map.Entry) iterator.next();
+                Node node = (Node) entry.getValue();
+                System.out.print(" " + node.id);
+            }
+            System.out.print("\n");
+        }
+    }
 
     public static void printTopology(HashMap<Integer, Tuple> topology) {
         System.out.println("R" + router_id + " -> R1 nbr link " + router1_num_links);
@@ -180,7 +194,7 @@ class Router {
 
     // loop through all links 
 
-    public static void updateDestinations(Graph graph, HashMap<Integer, Tuple> topology) {
+    public static void findDestinations(Graph graph, HashMap<Integer, Tuple> topology) {
         ArrayList checked = new ArrayList();
         for (int i = 0; i < topology.size()/2; i++) {
             Set set = topology.entrySet();
@@ -205,10 +219,33 @@ class Router {
                     matched.add(routerA_link);
                     routerB_id = tuple.router_id;
                     routerB_link = tuple.link_id; 
+                    updateDestinations(graph, routerA_id, routerB_id, tuple.link_cost);
                 }
             }
         }
         return;
+    }
+
+    public static void updateDestinations(Graph graph, int routerA_id, int routerB_id, int link_cost) {
+        Set<Node> nodes = graph.nodes;
+        Iterator iter = nodes.iterator();
+
+        Node temp1 = null;
+        Node temp2 = null;
+
+        while (iter.hasNext()) {
+            Map.Entry entry = (Map.Entry) iter.next();
+            Node node = (Node) entry.getValue();
+
+            if (node.id == routerA_id) {
+                temp1 = node;
+            }
+            if (node.id == routerB_id) {
+                temp2 = node;
+            }
+        }
+        temp1.addDestination(temp2, link_cost);
+        temp2.addDestination(temp1, link_cost);
     }
 
     public static byte[] convertIntegersToBytes(int[] integers) {
@@ -346,10 +383,11 @@ class Router {
             int key = Integer.parseInt(str_key);
             if (topology.containsKey(key) || !recv_hellos.contains(ls_pdu_sender)) {
                 printTopology(topology);
+                printGraph(graph);
             } else {
                 topology.put(key, temp);
                 updateNumLinks(ls_pdu_router_id);
-                updateDestinations(graph, topology);
+                findDestinations(graph, topology);
                 for (int i = 0; i < link_ids.length; i++) {
                     if ((int) link_ids[i] == ls_pdu_via) {
                         continue;
