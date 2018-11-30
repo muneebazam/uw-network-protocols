@@ -31,7 +31,7 @@ import java.util.LinkedList;
 
 class Node {
      
-    public String name;
+    public int id;
      
     public List<Node> shortestPath = new LinkedList<>();
      
@@ -43,11 +43,9 @@ class Node {
         adjacentNodes.put(destination, distance);
     }
   
-    public Node(String name) {
-        this.name = name;
+    public Node(int id) {
+        this.id = id;
     }
-     
-    // getters and setters
 }
 
 class Graph {
@@ -133,7 +131,10 @@ class Router {
     static int router3_num_links = 0;
     static int router4_num_links = 0;
     static int router5_num_links = 0;
+    static int total_links = 0;
     static HashMap<Integer, Tuple> topology = new HashMap<Integer, Tuple>();
+    static ArrayList matched = new ArrayList();
+
 
 
     public static void printTopology(HashMap<Integer, Tuple> topology) {
@@ -154,6 +155,7 @@ class Router {
     }
 
     public static void updateNumLinks(int router_id) {
+        total_links += 1;
         switch(router_id) {
             case 1: 
                 router1_num_links += 1;
@@ -173,6 +175,39 @@ class Router {
             default:
                 break;
         }
+        return;
+    }
+
+    // loop through all links 
+
+    public static void updateDestinations(Graph graph, HashMap<Integer, Tuple> topology) {
+        ArrayList checked = new ArrayList();
+        for (int i = 0; i < topology.size()/2; i++) {
+            Set set = topology.entrySet();
+            Iterator iterator = set.iterator();
+
+            int routerA_id = 0;
+            int routerA_link = 0;
+            int routerB_id = 0;
+            int routerB_link = 0;
+            while(iterator.hasNext()) {
+            Map.Entry entry = (Map.Entry)iterator.next();
+            Tuple tuple = (Tuple) entry.getValue();
+
+            if (!matched.contains(tuple.link_id) && !checked.contains(tuple.link_id)) {
+                checked.add(tuple.link_id);
+                routerA_id = tuple.router_id;
+                routerA_link = tuple.link_id;
+
+            }
+            if (!matched.contains(tuple.link_id) && tuple.link_id == routerA.link_id) {
+                // found a pair
+                matched.add(link_id);
+                routerB_id = tuple.router_id;
+                routerB_link = tuple.link_id; 
+            }
+        }
+        return;
     }
 
     public static byte[] convertIntegersToBytes(int[] integers) {
@@ -258,6 +293,8 @@ class Router {
         int recv_router_id;
         int recv_link_id;
 
+        Graph graph = new Graph();
+
         for (int i = 0; i < nbr_routers; i++) {
             byte[] hello_pdu_buffer = new byte[4096];
             DatagramPacket hello_pdu_in = new DatagramPacket(hello_pdu_buffer, hello_pdu_buffer.length);
@@ -270,7 +307,8 @@ class Router {
 
             System.out.println("Recieved a HELLO_PDU from router " + recv_router_id + " through link " + recv_link_id + "\n");
 
-
+            Node node = new Node(recv_router_id);
+            graph.addNode(node);
             
             for (int j = 0; j < nbr_routers; j++) {
                 // send LS_PDU each time
@@ -310,6 +348,7 @@ class Router {
             } else {
                 topology.put(key, temp);
                 updateNumLinks(ls_pdu_router_id);
+                updateDestinations(graph, topology);
                 for (int i = 0; i < link_ids.length; i++) {
                     if ((int) link_ids[i] == ls_pdu_via) {
                         continue;
