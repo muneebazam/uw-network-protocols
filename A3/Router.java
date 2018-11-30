@@ -10,11 +10,102 @@ import java.util.HashMap;
 import java.lang.IndexOutOfBoundsException;
 import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.HashSet;
 import java.util.Map;
 import java.util.Iterator;
 import java.util.Set;
+import java.util.List;
+import java.util.LinkedList;
+
+/*
+    Perform Dijkstra on every iteration
+    - convert topolgy hashMap to adjacency lists
+    - Copy implementation of Dijkstra algorithm
+    - Modify algorithm to support INF's
+    - Appropriate data structure to hold RIB
+    - Print RIB helper function
+
+*/
 
 // ADD CHECKS FOR BIND EXCEPTION OR BETTER ERROR MESSAGING 
+
+class Node {
+     
+    public String name;
+     
+    public List<Node> shortestPath = new LinkedList<>();
+     
+    public Integer distance = Integer.MAX_VALUE;
+     
+    public Map<Node, Integer> adjacentNodes = new HashMap<>();
+ 
+    public void addDestination(Node destination, int distance) {
+        adjacentNodes.put(destination, distance);
+    }
+  
+    public Node(String name) {
+        this.name = name;
+    }
+     
+    // getters and setters
+}
+
+class Graph {
+ 
+    public Set<Node> nodes = new HashSet<>();
+     
+    public void addNode(Node nodeA) {
+        nodes.add(nodeA);
+    }
+
+    public static Node getLowestDistanceNode(Set<Node> unsettledNodes) {
+        Node lowestDistanceNode = null;
+        int lowestDistance = Integer.MAX_VALUE;
+        for (Node node: unsettledNodes) {
+            int nodeDistance = node.distance;
+            if (nodeDistance < lowestDistance) {
+                lowestDistance = nodeDistance;
+                lowestDistanceNode = node;
+            }
+        }
+        return lowestDistanceNode;
+    }
+
+    public static void calculateMinimumDistance(Node evaluationNode, Integer edgeWeigh, Node sourceNode) {
+        Integer sourceDistance = sourceNode.distance;
+        if (sourceDistance + edgeWeigh < evaluationNode.distance) {
+            evaluationNode.distance = sourceDistance + edgeWeigh;
+            LinkedList<Node> shortestPath = new LinkedList<>(sourceNode.shortestPath);
+            shortestPath.add(sourceNode);
+            evaluationNode.shortestPath = shortestPath;
+        }
+    }
+ 
+    public static Graph calculateShortestPathFromSource(Graph graph, Node source) {
+        source.distance = 0;
+ 
+        Set<Node> settledNodes = new HashSet<>();
+        Set<Node> unsettledNodes = new HashSet<>();
+ 
+        unsettledNodes.add(source);
+ 
+        while (unsettledNodes.size() != 0) {
+            Node currentNode = Graph.getLowestDistanceNode(unsettledNodes);
+            unsettledNodes.remove(currentNode);
+            for (Map.Entry<Node, Integer> adjacencyPair: 
+            currentNode.adjacentNodes.entrySet()) {
+                Node adjacentNode = adjacencyPair.getKey();
+                Integer edgeWeight = adjacencyPair.getValue();
+                if (!settledNodes.contains(adjacentNode)) {
+                    Graph.calculateMinimumDistance(adjacentNode, edgeWeight, currentNode);
+                    unsettledNodes.add(adjacentNode);
+                }
+            }
+            settledNodes.add(currentNode);
+        }
+        return graph;
+    }
+}
 
 class Tuple {
 
@@ -36,6 +127,7 @@ class Router {
     static int nse_port;
     static int router_port;
     static String nse_host;
+    // change this to an array so we can loop through it in print
     static int router1_num_links = 0;
     static int router2_num_links = 0;
     static int router3_num_links = 0;
@@ -177,6 +269,8 @@ class Router {
             recv_hellos.add(recv_router_id);
 
             System.out.println("Recieved a HELLO_PDU from router " + recv_router_id + " through link " + recv_link_id + "\n");
+
+
             
             for (int j = 0; j < nbr_routers; j++) {
                 // send LS_PDU each time
@@ -211,7 +305,7 @@ class Router {
             Tuple temp = new Tuple(ls_pdu_router_id, ls_pdu_link_id, ls_pdu_link_cost);
             String str_key = "" + ls_pdu_router_id + ls_pdu_link_id + ls_pdu_link_cost;
             int key = Integer.parseInt(str_key);
-            if (topology.containsKey(key)) {
+            if (topology.containsKey(key) || !recv_hellos.contains(ls_pdu_sender)) {
                 printTopology(topology);
             } else {
                 topology.put(key, temp);
