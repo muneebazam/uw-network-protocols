@@ -387,6 +387,14 @@ class Router {
             if (topology.containsKey(key) || !recv_hellos.contains(ls_pdu_sender)) {
                 printTopology(topology);
                 graph = Graph.calculateShortestPathFromSource(graph, source_node);
+                System.out.println("ABOUT TO PRINT THE RIB TABLE RIGHT HERE FAM");
+                for (Node n : graph.nodes) {
+                    List<Node> shortestPathList = n.shortestPath;
+                    for (int i = 0; i < shortestPathList.size(); i++) {
+                        Node tmp = shortestPathList.get(i);
+                        System.out.println(tmp.id);
+                    }
+                }
                 printGraph(graph);
             } else {
                 if (!nodeList.contains(ls_pdu_router_id)) {
