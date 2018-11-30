@@ -193,7 +193,7 @@ class Router {
 
     public static void findDestinations(Graph graph, HashMap<Integer, Tuple> topology) {
         ArrayList checked = new ArrayList();
-        for (int i = 0; i < topology.size()/2; i++) {
+        for (int i = 0; i < topology.size(); i++) {
             Set set = topology.entrySet();
             Iterator iterator = set.iterator();
 
