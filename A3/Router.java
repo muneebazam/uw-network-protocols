@@ -227,8 +227,10 @@ class Router {
     public static void updateDestinations(Graph graph, int routerA_id, int routerB_id, int link_cost) {
         Node temp1 = null;
         Node temp2 = null;
+        int numNodes = 0;
 
         for (Node n: graph.nodes) {
+            numNodes += 1;
             if (n.id == routerA_id) {
                 System.out.println("found node: " + routerA_id);
                 temp1 = n;
@@ -238,6 +240,7 @@ class Router {
                 temp2 = n;
             }
         }
+        System.out.println("THE NUMBER OF NODES IS: " + numNodes);
         if (temp1 != null && temp2 != null) {
             temp1.addDestination(temp2, link_cost);
             temp2.addDestination(temp1, link_cost);
