@@ -193,6 +193,7 @@ class Router {
 
     public static void findDestinations(Graph graph, HashMap<Integer, Tuple> topology) {
         for (int i = 0; i < topology.size(); i++) {
+            ArrayList checked = new ArrayList();
             Set set = topology.entrySet();
             Iterator iterator = set.iterator();
 
@@ -200,13 +201,16 @@ class Router {
             int routerA_link = 0;
             int routerB_id = 0;
             int routerB_link = 0;
+            boolean inTesting = false;
             while(iterator.hasNext()) {
                 Map.Entry entry = (Map.Entry)iterator.next();
                 Tuple tuple = (Tuple) entry.getValue();
 
-                if (!matched.contains(tuple.link_id)) {
+                if (!matched.contains(tuple.link_id) && !checked.contains(tuple.link_id) && !inTesting) {
+                    checked.add(tuple.link_id);
                     routerA_id = tuple.router_id;
                     routerA_link = tuple.link_id;
+                    inTesting = true;
                     continue;
                 }
                 if (!matched.contains(tuple.link_id) && tuple.link_id == routerA_link) {
