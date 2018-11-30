@@ -138,13 +138,13 @@ class Router {
     public static void printGraph(Graph graph) {
         for (Node n : graph.nodes) {
             System.out.println("Node: " + n.id);
+
             Map<Node, Integer> neighbors = n.adjacentNodes;
             Set set = neighbors.entrySet();
             Iterator iterator = set.iterator();
             System.out.print("Adjacent Nodes:");
             while(iterator.hasNext()) {
-                Map.Entry entry = (Map.Entry) iterator.next();
-                Node node = (Node) entry.getValue();
+                Map.Entry node = (Map.Entry) iterator.next();
                 System.out.print(" " + node.id);
             }
             System.out.print("\n");
@@ -241,8 +241,10 @@ class Router {
                 temp2 = n;
             }
         }
-        temp1.addDestination(temp2, link_cost);
-        temp2.addDestination(temp1, link_cost);
+        if (temp1 != null && temp2 != null) {
+            temp1.addDestination(temp2, link_cost);
+            temp2.addDestination(temp1, link_cost);
+        }
     }
 
     public static byte[] convertIntegersToBytes(int[] integers) {
