@@ -335,8 +335,8 @@ class Router {
         Graph graph = new Graph();
         ArrayList nodeList = new ArrayList();
 
-        Node node = new Node(router_id);
-        graph.addNode(node);
+        Node source_node = new Node(router_id);
+        graph.addNode(source_node);
         nodeList.add(router_id);
 
         for (int i = 0; i < nbr_routers; i++) {
@@ -386,11 +386,12 @@ class Router {
             int key = Integer.parseInt(str_key);
             if (topology.containsKey(key) || !recv_hellos.contains(ls_pdu_sender)) {
                 printTopology(topology);
+                graph = Graph.calculateShortestPathFromSource(graph, source_node);
                 printGraph(graph);
             } else {
                 if (!nodeList.contains(ls_pdu_router_id)) {
                     nodeList.add(ls_pdu_router_id);
-                    node = new Node(ls_pdu_router_id);
+                    Node node = new Node(ls_pdu_router_id);
                     graph.addNode(node);
                 }
                 topology.put(key, temp);
