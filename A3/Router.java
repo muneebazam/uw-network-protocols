@@ -135,16 +135,13 @@ class Router {
     static HashMap<Integer, Tuple> topology = new HashMap<Integer, Tuple>();
     static ArrayList matched = new ArrayList();
 
-    public static synchronized void printGraph(Graph graph) {
+    public static void printGraph(Graph graph) {
         for (Node n : graph.nodes) {
             System.out.println("Node: " + n.id);
-
-            Map<Node, Integer> neighbors = n.adjacentNodes;
-            Set set = neighbors.entrySet();
-            Iterator iterator = set.iterator();
             System.out.print("Adjacent Nodes:");
-            while(iterator.hasNext()) {
-                Node node = (Node) iterator.next();
+
+            for (Map.Entry<Node, Integer> neighbor: n.adjacentNodes.entrySet()) {
+                Node node = neighbor.getKey();
                 System.out.print(" " + node.id);
             }
             System.out.print("\n");
