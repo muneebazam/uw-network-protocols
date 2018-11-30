@@ -219,6 +219,7 @@ class Router {
                     matched.add(routerA_link);
                     routerB_id = tuple.router_id;
                     routerB_link = tuple.link_id; 
+                    System.out.println("The two routers are:" + routerA_id + " and " + routerB_id + " with link cost " + tuple.link_cost);
                     updateDestinations(graph, routerA_id, routerB_id, tuple.link_cost);
                 }
             }
