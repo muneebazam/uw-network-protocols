@@ -200,9 +200,9 @@ class Router {
                     routerA_link = tuple.link_id;
 
                 }
-                if (!matched.contains(tuple.link_id) && tuple.link_id == routerA.link_id) {
+                if (!matched.contains(tuple.link_id) && tuple.link_id == routerA_link) {
                     // found a pair
-                    matched.add(link_id);
+                    matched.add(routerA_link);
                     routerB_id = tuple.router_id;
                     routerB_link = tuple.link_id; 
                 }
