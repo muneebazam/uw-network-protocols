@@ -227,21 +227,15 @@ class Router {
     }
 
     public static void updateDestinations(Graph graph, int routerA_id, int routerB_id, int link_cost) {
-        Set<Node> nodes = graph.nodes;
-        Iterator iter = nodes.iterator();
-
         Node temp1 = null;
         Node temp2 = null;
 
-        while (iter.hasNext()) {
-            Map.Entry entry = (Map.Entry) iter.next();
-            Node node = (Node) entry.getValue();
-
-            if (node.id == routerA_id) {
-                temp1 = node;
+        for (Node n: graph.nodes) {
+            if (n.id == routerA_id) {
+                temp1 = n;
             }
-            if (node.id == routerB_id) {
-                temp2 = node;
+            if (n.id == routerB_id) {
+                temp2 = n;
             }
         }
         temp1.addDestination(temp2, link_cost);
