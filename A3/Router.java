@@ -135,7 +135,7 @@ class Router {
     static HashMap<Integer, Tuple> topology = new HashMap<Integer, Tuple>();
     static ArrayList matched = new ArrayList();
 
-    public static void printGraph(Graph graph) {
+    public static synchronized void printGraph(Graph graph) {
         for (Node n : graph.nodes) {
             System.out.println("Node: " + n.id);
 
