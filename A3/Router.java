@@ -8,8 +8,6 @@ import java.io.InputStreamReader;
 import java.nio.ByteBuffer;
 import java.nio.ByteOrder;
 
-// ADD CHECKS FOR BIND EXCEPTION OR BETTER ERROR MESSAGING 
-
 class Node {
      
     public int id;
@@ -108,37 +106,37 @@ class Router {
     static Graph graph = new Graph();
 
     public static void printRIB(Graph graph) {
-        System.out.println("Printing Routing Information Base (RIB):");
-        System.out.println("R" + router_id + " -> LOCAL, 0");
+        log.println("Printing Routing Information Base (RIB):");
+        log.println("R" + router_id + " -> LOCAL, 0");
         for (Node n : graph.nodes) {
             if (n.id == router_id) {
                 continue;
             } else {
-                System.out.print("R" + router_id);
+                log.print("R" + router_id);
                 List<Node> shortestPathList = n.shortestPath;
                 for (int i = 1; i < shortestPathList.size(); i++) {
                     Node tmp = shortestPathList.get(i);
-                    System.out.print(" -> R" + tmp.id);
+                    log.print(" -> R" + tmp.id);
                 }
-                System.out.print(" -> R" + n.id + ", " + n.distance);
+                log.print(" -> R" + n.id + ", " + n.distance);
             }
-            System.out.print("\n");
+            log.print("\n");
         }
-        System.out.print("\n");
+        log.print("\n");
     }
 
     public static void printTopology(HashMap<Integer, Tuple> topology) {
-        System.out.println("Printing Link State Database:");
+        log.println("Printing Link State Database:");
         for (int i = 0; i < NUM_ROUTERS; i++) {
-            System.out.println("R" + router_id + " -> R" + (i + 1) + " nbr link " + num_links[i]);
+            log.println("R" + router_id + " -> R" + (i + 1) + " nbr link " + num_links[i]);
         }
         Iterator iter = topology.entrySet().iterator();
         while (iter.hasNext()) {
             Map.Entry entry = (Map.Entry) iter.next();
             Tuple tuple = (Tuple) entry.getValue();
-            System.out.println("R" + router_id + " -> R" + tuple.router_id + " link " + tuple.link_id + " cost " + tuple.link_cost);
+            log.println("R" + router_id + " -> R" + tuple.router_id + " link " + tuple.link_id + " cost " + tuple.link_cost);
         }
-        System.out.print("\n");
+        log.print("\n");
     }
 
     public static void findDestinations(Graph graph, HashMap<Integer, Tuple> topology) {
@@ -204,7 +202,7 @@ class Router {
         }
 
         // Create log file for this router
-        PrintWriter log = new PrintWriter("router" + router_id + ".log");
+        PrintWriter log = new PrintWriter("router" + router_id + ".log", true);
 
         // Send INIT and receive CIRCUIT_DB from Emulator 
         int[] init_data = {router_id};
@@ -262,7 +260,7 @@ class Router {
             
             for (int j = 0; j < nbr_routers; j++) {
                 // wtf is going on here
-                System.out.println("Sending an LS_PDU to router " + recv_router_id + " from router " + router_id + " containing link id " + link_ids[j] + " with cost " + link_costs[j] + " through link " + recv_link_id + "\n");
+                log.println("Sending an LS_PDU to router " + recv_router_id + " from router " + router_id + " containing link id " + link_ids[j] + " with cost " + link_costs[j] + " through link " + recv_link_id + "\n");
                 int[] ls_pdu_data = {router_id, router_id, link_ids[j], link_costs[j], recv_link_id};
                 byte[] ls_pdu_send = convertIntegersToBytes(ls_pdu_data);
                 DatagramPacket ls_pdu_pkt = new DatagramPacket(ls_pdu_send, ls_pdu_send.length, clientIP, nse_port);
@@ -303,7 +301,7 @@ class Router {
                 graph = Graph.dijkstra(graph, source_node);
                 printTopology(topology);
                 printRIB(graph);
-                System.out.print("\n");
+                log.print("\n");
                 // Propogate LS_PDU through network (Except for link we recieved on)
                 for (int i = 0; i < link_ids.length; i++) {
                     if ((int) link_ids[i] == ls_pdu_via) {
