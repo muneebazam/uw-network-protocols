@@ -108,7 +108,7 @@ class Router {
     static Graph graph = new Graph();
 
     public static void printRIB(Graph graph) {
-        System.out.println("Printing Routing Information Base (RIB):\n");
+        System.out.println("Printing Routing Information Base (RIB):");
         System.out.println("R" + router_id + " -> LOCAL, 0");
         for (Node n : graph.nodes) {
             if (n.id == router_id) {
@@ -128,7 +128,7 @@ class Router {
     }
 
     public static void printTopology(HashMap<Integer, Tuple> topology) {
-        System.out.println("Printing Link State Database:\n");
+        System.out.println("Printing Link State Database:");
         for (int i = 0; i < NUM_ROUTERS; i++) {
             System.out.println("R" + router_id + " -> R" + (i + 1) + " nbr link " + num_links[i]);
         }
@@ -262,7 +262,7 @@ class Router {
             
             for (int j = 0; j < nbr_routers; j++) {
                 // wtf is going on here
-                System.out.println("Sending an LS_PDU to router " + recv_router_id + " from router " + router_id + " containing link id " + link_ids[j] + " with cost " + link_costs[j] + " through link " + recv_link_id + "\n");
+                //System.out.println("Sending an LS_PDU to router " + recv_router_id + " from router " + router_id + " containing link id " + link_ids[j] + " with cost " + link_costs[j] + " through link " + recv_link_id + "\n");
                 int[] ls_pdu_data = {router_id, router_id, link_ids[j], link_costs[j], recv_link_id};
                 byte[] ls_pdu_send = convertIntegersToBytes(ls_pdu_data);
                 DatagramPacket ls_pdu_pkt = new DatagramPacket(ls_pdu_send, ls_pdu_send.length, clientIP, nse_port);
@@ -303,6 +303,7 @@ class Router {
                 graph = Graph.dijkstra(graph, source_node);
                 printTopology(topology);
                 printRIB(graph);
+                System.out.print("\n");
                 // Propogate LS_PDU through network (Except for link we recieved on)
                 for (int i = 0; i < link_ids.length; i++) {
                     if ((int) link_ids[i] == ls_pdu_via) {
