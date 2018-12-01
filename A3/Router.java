@@ -109,11 +109,16 @@ class Router {
 
     public static void printRIB(Graph graph) {
         for (Node n : graph.nodes) {
-            System.out.print("NODE: " + n.id + ", PATH: ");
-            List<Node> shortestPathList = n.shortestPath;
-            for (int i = 0; i < shortestPathList.size(); i++) {
-                Node tmp = shortestPathList.get(i);
-                System.out.print(" " + tmp.id);
+            System.out.print("R" + router_id);
+            if (n.id == router_id) {
+                System.out.print(" LOCAL, 0");
+            } else {
+                List<Node> shortestPathList = n.shortestPath;
+                for (int i = 0; i < shortestPathList.size(); i++) {
+                    Node tmp = shortestPathList.get(i);
+                    System.out.print(" -> " + tmp.id);
+                }
+                System.out.print(", " + n.distance);
             }
             System.out.print("\n");
         }
@@ -253,7 +258,7 @@ class Router {
             hello_acks.add(recv_router_id);
             
             for (int j = 0; j < nbr_routers; j++) {
-                // send LS_PDU each time
+                // wtf is going on here
                 System.out.println("Sending an LS_PDU to router " + recv_router_id + " from router " + router_id + " containing link id " + link_ids[j] + " with cost " + link_costs[j] + " through link " + recv_link_id + "\n");
                 int[] ls_pdu_data = {router_id, router_id, link_ids[j], link_costs[j], recv_link_id};
                 byte[] ls_pdu_send = convertIntegersToBytes(ls_pdu_data);
