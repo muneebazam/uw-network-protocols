@@ -192,31 +192,22 @@ class Router {
         }
 
         // Create log file for this router
-        String file_name = "router" + router_id + ".log";
-        PrintWriter log = new PrintWriter(file_name);
+        PrintWriter log = new PrintWriter("router" + router_id + ".log");
 
-        int[] int_data = {router_id};
-        byte[] data = convertIntegersToBytes(int_data);
-
-        try {
-            DatagramSocket socket = new DatagramSocket(router_port);
-        } catch (Exception e) {
-            System.out.println("Port " + router_port + " is already in use, exiting program.");
-            exit(1);
-        }
+        // Send INIT and receive CIRCUIT_DB from Emulator 
+        int[] init_data = {router_id};
+        byte[] init_data_bytes = convertIntegersToBytes(init_data);
+        DatagramSocket socket = new DatagramSocket(router_port);
         InetAddress clientIP = InetAddress.getByName(nse_host);
-        DatagramPacket data_pkt = new DatagramPacket(data, data.length, clientIP, nse_port);
-        socket.send(data_pkt);
+        DatagramPacket init_pkt = new DatagramPacket(init_data_bytes, init_data_bytes.length, clientIP, nse_port);
+        socket.send(init_pkt);
+        byte[] circuit_db_bytes = new byte[4096];
+        DatagramPacket circuit_db_in = new DatagramPacket(circuit_db_bytes, circuit_db_bytes.length);
+        socket.receive(circuit_db_in);
+        ByteBuffer circuit_db = ByteBuffer.wrap(circuit_db_in.getData()).order(ByteOrder.LITTLE_ENDIAN);
 
-        byte[] eot = new byte[4096];
-        DatagramPacket data_in = new DatagramPacket(eot, eot.length);
-        socket.receive(data_in);
-
-        ByteBuffer circuit_db = ByteBuffer.wrap(data_in.getData()).order(ByteOrder.LITTLE_ENDIAN);
-
-
+        // 
         int nbr_routers = (int) circuit_db.getInt(0);
-        System.out.println("the number of links attached to this router are: " + nbr_routers + "\n");
 
         int offset = 4;
         int link_ids[] = new int[nbr_routers];
