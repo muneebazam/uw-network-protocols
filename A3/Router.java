@@ -111,10 +111,10 @@ class Router {
         System.out.println("Printing Routing Information Base (RIB):\n");
         System.out.println("R" + router_id + " -> LOCAL, 0");
         for (Node n : graph.nodes) {
-            System.out.print("R" + router_id);
             if (n.id == router_id) {
                 continue;
             } else {
+                System.out.print("R" + router_id);
                 List<Node> shortestPathList = n.shortestPath;
                 for (int i = 1; i < shortestPathList.size(); i++) {
                     Node tmp = shortestPathList.get(i);
