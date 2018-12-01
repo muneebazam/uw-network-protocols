@@ -262,18 +262,15 @@ class Router {
         }
 
         while (true) {
-            byte[] ls_pdu_buffer = new byte[4096];
-            DatagramPacket ls_pdu_in = new DatagramPacket(ls_pdu_buffer, ls_pdu_buffer.length);
+            byte[] ls_pdu_bytes = new byte[4096];
+            DatagramPacket ls_pdu_in = new DatagramPacket(ls_pdu_bytes, ls_pdu_bytes.length);
             socket.receive(ls_pdu_in);
             ByteBuffer recv_ls_pdu = ByteBuffer.wrap(ls_pdu_in.getData()).order(ByteOrder.LITTLE_ENDIAN);
-
             int ls_pdu_sender = (int) recv_ls_pdu.getInt(0);
             int ls_pdu_router_id = (int) recv_ls_pdu.getInt(4);
             int ls_pdu_link_id = (int) recv_ls_pdu.getInt(8);
             int ls_pdu_link_cost = (int) recv_ls_pdu.getInt(12);
             int ls_pdu_via = (int) recv_ls_pdu.getInt(16);
-
-            System.out.println("Received an LS_PDU from router " + ls_pdu_sender + " via link id " + ls_pdu_via + " that " + ls_pdu_router_id + " has a link with id " + ls_pdu_link_id + " with cost " + ls_pdu_link_cost + "\n");
 
             Tuple temp = new Tuple(ls_pdu_router_id, ls_pdu_link_id, ls_pdu_link_cost);
             String str_key = "" + ls_pdu_router_id + ls_pdu_link_id + ls_pdu_link_cost;
@@ -305,7 +302,6 @@ class Router {
                     if ((int) link_ids[i] == ls_pdu_via) {
                         continue;
                     } else {
-                        System.out.println("Sending an LS_PDU from router " + router_id + " stating that router " + ls_pdu_router_id + " has link " + ls_pdu_link_id + " with cost " + ls_pdu_link_cost + " . Sending through link " + link_ids[i] + "\n");
                         int[] recv_ls_pdu_data = {router_id, ls_pdu_router_id, ls_pdu_link_id, ls_pdu_link_cost, link_ids[i]};
                         byte[] recv_ls_pdu_pkt = convertIntegersToBytes(recv_ls_pdu_data);
                         DatagramPacket ls_pdu_pkt_propogate = new DatagramPacket(recv_ls_pdu_pkt, recv_ls_pdu_pkt.length, clientIP, nse_port);
