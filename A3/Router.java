@@ -108,17 +108,19 @@ class Router {
     static Graph graph = new Graph();
 
     public static void printRIB(Graph graph) {
+        System.out.println("Printing Routing Information Base (RIB):\n");
+        System.out.println("R" + router_id + " -> LOCAL, 0");
         for (Node n : graph.nodes) {
             System.out.print("R" + router_id);
             if (n.id == router_id) {
-                System.out.print(" LOCAL, 0");
+                continue;
             } else {
                 List<Node> shortestPathList = n.shortestPath;
-                for (int i = 0; i < shortestPathList.size(); i++) {
+                for (int i = 1; i < shortestPathList.size(); i++) {
                     Node tmp = shortestPathList.get(i);
-                    System.out.print(" -> " + tmp.id);
+                    System.out.print(" -> R" + tmp.id);
                 }
-                System.out.print(", " + n.distance);
+                System.out.print(" -> R" + n.id + ", " + n.distance);
             }
             System.out.print("\n");
         }
@@ -126,6 +128,7 @@ class Router {
     }
 
     public static void printTopology(HashMap<Integer, Tuple> topology) {
+        System.out.println("Printing Link State Database:\n");
         for (int i = 0; i < NUM_ROUTERS; i++) {
             System.out.println("R" + router_id + " -> R" + (i + 1) + " nbr link " + num_links[i]);
         }
