@@ -145,43 +145,28 @@ class Router {
                     routerLink = tuple.link_id;
                     inTesting = true;
                 } else if (!matched.contains(tuple.link_id) && tuple.link_id == routerLink) {
+                    Node n1 = null;
+                    Node n2 = null;
+                    for (Node n: graph.nodes) {
+                        if (n.id == routerId) {
+                            n1 = n;
+                        } else if (n.id == tuple.router_id) {
+                            n2 = n;
+                        }
+                    }
                     matched.add(routerLink);
-                    updateDestinations(graph, routerId, tuple.router_id, tuple.link_cost);
+                    n1.addDestination(n2, tuple.link_cost);
+                    n2.addDestination(n1, tuple.link_cost);
                 }
             }
         }
-        return;
     }
 
-    public static void updateDestinations(Graph graph, int routerA_id, int routerB_id, int link_cost) {
-        Node temp1 = null;
-        Node temp2 = null;
-        int numNodes = 0;
-
-        for (Node n: graph.nodes) {
-            numNodes += 1;
-            if (n.id == routerA_id) {
-                System.out.println("found node: " + routerA_id);
-                temp1 = n;
-            }
-            if (n.id == routerB_id) {
-                System.out.println("found node: " + routerB_id);
-                temp2 = n;
-            }
-        }
-        System.out.println("THE NUMBER OF NODES IS: " + numNodes);
-        if (temp1 != null && temp2 != null) {
-            temp1.addDestination(temp2, link_cost);
-            temp2.addDestination(temp1, link_cost);
-        }
-    }
-
-    public static byte[] convertIntegersToBytes(int[] integers) {
-        if (integers != null) {
-            byte[] outputBytes = new byte[integers.length * 4];
-
-            for(int i = 0, k = 0; i < integers.length; i++) {
-                int integerTemp = integers[i];
+    public static byte[] convertIntegersToBytes(int[] nums) {
+        if (nums != null) {
+            byte[] outputBytes = new byte[nums.length * 4];
+            for(int i = 0, k = 0; i < nums.length; i++) {
+                int integerTemp = nums[i];
                 for(int j = 0; j < 4; j++, k++) {
                     outputBytes[k] = (byte)((integerTemp >> (8 * j)) & 0xFF);
                 }
@@ -213,8 +198,12 @@ class Router {
         int[] int_data = {router_id};
         byte[] data = convertIntegersToBytes(int_data);
 
-        // add a check here or try catch 
-        DatagramSocket socket = new DatagramSocket(router_port);
+        try {
+            DatagramSocket socket = new DatagramSocket(router_port);
+        } catch (Exception e) {
+            System.out.println("Port " + router_port + " is already in use, exiting program.")
+            exit(1);
+        }
         InetAddress clientIP = InetAddress.getByName(nse_host);
         DatagramPacket data_pkt = new DatagramPacket(data, data.length, clientIP, nse_port);
         socket.send(data_pkt);
