@@ -117,6 +117,7 @@ class Router {
             }
             System.out.print("\n");
         }
+        System.out.print("\n");
     }
 
     public static void printTopology(HashMap<Integer, Tuple> topology) {
@@ -129,6 +130,7 @@ class Router {
             Tuple tuple = (Tuple) entry.getValue();
             System.out.println("R" + router_id + " -> R" + tuple.router_id + " link " + tuple.link_id + " cost " + tuple.link_cost);
         }
+        System.out.print("\n");
     }
 
     public static void findDestinations(Graph graph, HashMap<Integer, Tuple> topology) {
@@ -251,8 +253,6 @@ class Router {
             hello_acks.add(recv_router_id);
             
             for (int j = 0; j < nbr_routers; j++) {
-                // send LS_PDU each time
-                System.out.println("Sending an LS_PDU to router " + recv_router_id + " from router " + router_id + " containing link id " + link_ids[j] + " with cost " + link_costs[j] + " through link " + recv_link_id + "\n");
                 int[] ls_pdu_data = {router_id, router_id, link_ids[j], link_costs[j], recv_link_id};
                 byte[] ls_pdu_send = convertIntegersToBytes(ls_pdu_data);
                 DatagramPacket ls_pdu_pkt = new DatagramPacket(ls_pdu_send, ls_pdu_send.length, clientIP, nse_port);
@@ -274,19 +274,26 @@ class Router {
             Tuple temp = new Tuple(ls_pdu_router_id, ls_pdu_link_id, ls_pdu_link_cost);
             String str_key = "" + ls_pdu_router_id + ls_pdu_link_id + ls_pdu_link_cost;
             int key = Integer.parseInt(str_key);
+
+            // if we already receieved this LS_PDU or did not recieve a HELLO_PDU we ignore the packet
             if (topology.containsKey(key) || !hello_acks.contains(ls_pdu_sender)) {
-                graph = Graph.dijkstra(graph, source_node);
-                printTopology(topology);
-                printRIB(graph);
+                continue;
             } else {
+                topology.put(key, temp);
+                num_links[ls_pdu_router_id - 1] += 1;
+
+                // if this is the first packet from this router we have
+                // discovered a new router and add it to our graph struct
                 if (!nodeList.contains(ls_pdu_router_id)) {
                     nodeList.add(ls_pdu_router_id);
                     Node node = new Node(ls_pdu_router_id);
                     graph.addNode(node);
                 }
-                topology.put(key, temp);
-                num_links[ls_pdu_router_id - 1] += 1;
                 findDestinations(graph, topology);
+                graph = Graph.dijkstra(graph, source_node);
+                printTopology(topology);
+                printRIB(graph);
+                // Propogate LS_PDU through network (Except for link we recieved on)
                 for (int i = 0; i < link_ids.length; i++) {
                     if ((int) link_ids[i] == ls_pdu_via) {
                         continue;
