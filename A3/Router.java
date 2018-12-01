@@ -211,6 +211,7 @@ class Router {
         InetAddress clientIP = InetAddress.getByName(nse_host);
         DatagramPacket init_pkt = new DatagramPacket(init_data_bytes, init_data_bytes.length, clientIP, nse_port);
         socket.send(init_pkt);
+        log.println("R" + router_id + " sends an INIT PDU: router_id " + router_id);
         byte[] circuit_db_bytes = new byte[4096];
         DatagramPacket circuit_db_in = new DatagramPacket(circuit_db_bytes, circuit_db_bytes.length);
         socket.receive(circuit_db_in);
@@ -222,6 +223,8 @@ class Router {
         int link_ids[] = new int[nbr_routers];
         int link_costs[] = new int[nbr_routers];
         offset += 4;
+        log.println("R" + router_id + " receives a CIRCUIT DB: nbr_links " + nbr_routers);
+        log.flush();
 
         // update above arrays and start building link state database (topology)
         for (int i = 0; i < nbr_routers; i++) {
@@ -237,10 +240,12 @@ class Router {
 
         // send HELLO_PDU on all direct links
         for (int i = 0; i < nbr_routers; i++) {
+        	log.println("R" + router_id + " sends a HELLO PDU: router_id " + router_id + ", link_id " + link_ids[i]);
             int[] hello_pdu_data = {router_id, link_ids[i]};
             byte[] hello_pdu_bytes = convertIntegersToBytes(hello_pdu_data);
             DatagramPacket hello_pdu_pkt = new DatagramPacket(hello_pdu_bytes, hello_pdu_bytes.length, clientIP, nse_port);
             socket.send(hello_pdu_pkt);
+            log.flush();
         }
 
         // Add this router (node) to the graph struct
@@ -257,15 +262,16 @@ class Router {
             int recv_router_id = (int) ls_pdu.getInt(0);
             int recv_link_id = (int) ls_pdu.getInt(4);
             hello_acks.add(recv_router_id);
-            
+            log.println("R" + router_id + " receives a HELLO PDU: router_id " + recv_router_id + ", link_id " + recv_link_id);
+
             for (int j = 0; j < nbr_routers; j++) {
-                // wtf is going on here
-                log.println("Sending an LS_PDU to router " + recv_router_id + " from router " + router_id + " containing link id " + link_ids[j] + " with cost " + link_costs[j] + " through link " + recv_link_id + "\n");
+                log.println("R" + router_id + " sends an LS PDU: sender " + router_id + ", router_id " + router_id + ", link_id " + link_ids[j] + ", link_cost " + link_costs[j] + ", via " + recv_link_id);
                 int[] ls_pdu_data = {router_id, router_id, link_ids[j], link_costs[j], recv_link_id};
                 byte[] ls_pdu_send = convertIntegersToBytes(ls_pdu_data);
                 DatagramPacket ls_pdu_pkt = new DatagramPacket(ls_pdu_send, ls_pdu_send.length, clientIP, nse_port);
                 socket.send(ls_pdu_pkt);
             }
+            log.flush();
         }
 
         while (true) {
@@ -278,6 +284,8 @@ class Router {
             int ls_pdu_link_id = (int) recv_ls_pdu.getInt(8);
             int ls_pdu_link_cost = (int) recv_ls_pdu.getInt(12);
             int ls_pdu_via = (int) recv_ls_pdu.getInt(16);
+            log.println("R" + router_id + " receives an LS PDU: sender " + ls_pdu_sender + ", router_id " + ls_pdu_router_id + ", link_id " + ls_pdu_link_id + ", link_cost " + ls_pdu_link_cost + ", via " + ls_pdu_via);
+
 
             Tuple temp = new Tuple(ls_pdu_router_id, ls_pdu_link_id, ls_pdu_link_cost);
             String str_key = "" + ls_pdu_router_id + ls_pdu_link_id + ls_pdu_link_cost;
@@ -307,6 +315,7 @@ class Router {
                     if ((int) link_ids[i] == ls_pdu_via) {
                         continue;
                     } else {
+                    	log.println("R" + router_id + " sends an LS PDU: sender " + router_id + ", router_id " + ls_pdu_router_id + ", link_id " + ls_pdu_link_id + ", link_cost " + ls_pdu_link_cost + ", via " + link_ids[i]);
                         int[] recv_ls_pdu_data = {router_id, ls_pdu_router_id, ls_pdu_link_id, ls_pdu_link_cost, link_ids[i]};
                         byte[] recv_ls_pdu_pkt = convertIntegersToBytes(recv_ls_pdu_data);
                         DatagramPacket ls_pdu_pkt_propogate = new DatagramPacket(recv_ls_pdu_pkt, recv_ls_pdu_pkt.length, clientIP, nse_port);
