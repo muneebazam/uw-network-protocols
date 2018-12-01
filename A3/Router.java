@@ -252,11 +252,9 @@ class Router {
             int recv_link_id = (int) ls_pdu.getInt(4);
             hello_acks.add(recv_router_id);
 
-            System.out.println("Recieved a HELLO_PDU from router " + recv_router_id + " through link " + recv_link_id + "\n");
             
             for (int j = 0; j < nbr_routers; j++) {
                 // send LS_PDU each time
-                System.out.println("Sending an LS_PDU to router " + recv_router_id + " from router " + router_id + " containing link id " + link_ids[j] + " with cost " + link_costs[j] + " through link " + recv_link_id + "\n");
                 int[] ls_pdu_data = {router_id, router_id, link_ids[j], link_costs[j], recv_link_id};
                 byte[] ls_pdu_send = convertIntegersToBytes(ls_pdu_data);
                 DatagramPacket ls_pdu_pkt = new DatagramPacket(ls_pdu_send, ls_pdu_send.length, clientIP, nse_port);
@@ -282,7 +280,6 @@ class Router {
             ls_pdu_link_cost = (int) recv_ls_pdu.getInt(12);
             ls_pdu_via = (int) recv_ls_pdu.getInt(16);
 
-            System.out.println("Received an LS_PDU from router " + ls_pdu_sender + " via link id " + ls_pdu_via + " that " + ls_pdu_router_id + " has a link with id " + ls_pdu_link_id + " with cost " + ls_pdu_link_cost + "\n");
 
             Tuple temp = new Tuple(ls_pdu_router_id, ls_pdu_link_id, ls_pdu_link_cost);
             String str_key = "" + ls_pdu_router_id + ls_pdu_link_id + ls_pdu_link_cost;
@@ -314,7 +311,6 @@ class Router {
                     if ((int) link_ids[i] == ls_pdu_via) {
                         continue;
                     } else {
-                        System.out.println("Sending an LS_PDU from router " + router_id + " stating that router " + ls_pdu_router_id + " has link " + ls_pdu_link_id + " with cost " + ls_pdu_link_cost + " . Sending through link " + link_ids[i] + "\n");
                         int[] recv_ls_pdu_data = {router_id, ls_pdu_router_id, ls_pdu_link_id, ls_pdu_link_cost, link_ids[i]};
                         byte[] recv_ls_pdu_pkt = convertIntegersToBytes(recv_ls_pdu_data);
                         DatagramPacket ls_pdu_pkt_propogate = new DatagramPacket(recv_ls_pdu_pkt, recv_ls_pdu_pkt.length, clientIP, nse_port);
