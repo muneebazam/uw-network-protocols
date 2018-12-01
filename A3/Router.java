@@ -105,7 +105,7 @@ class Router {
     static ArrayList matched = new ArrayList();
     static ArrayList hello_acks = new ArrayList();
     static Graph graph = new Graph();
-    static ArrayList routerList = new ArrayList();
+    static ArrayList nodeList = new ArrayList();
 
     public static void printGraph(Graph graph) {
         for (Node n : graph.nodes) {
@@ -236,20 +236,20 @@ class Router {
             socket.send(hello_pdu_pkt);
         }
 
-        // add this router (node) to the graph struct
         Node source_node = new Node(router_id);
         graph.addNode(source_node);
-        routerList.add(router_id);
+        nodeList.add(router_id);
 
-        // Send LS_PDU on every direct link we received a HELLO_PDU from
         for (int i = 0; i < nbr_routers; i++) {
             byte[] hello_pdu_buffer = new byte[4096];
             DatagramPacket hello_pdu_in = new DatagramPacket(hello_pdu_buffer, hello_pdu_buffer.length);
             socket.receive(hello_pdu_in);
             ByteBuffer ls_pdu = ByteBuffer.wrap(hello_pdu_in.getData()).order(ByteOrder.LITTLE_ENDIAN);
+
             int recv_router_id = (int) ls_pdu.getInt(0);
             int recv_link_id = (int) ls_pdu.getInt(4);
             hello_acks.add(recv_router_id);
+
             
             for (int j = 0; j < nbr_routers; j++) {
                 int[] ls_pdu_data = {router_id, router_id, link_ids[j], link_costs[j], recv_link_id};
@@ -288,8 +288,8 @@ class Router {
                 }
                 printGraph(graph);
             } else {
-                if (!routerList.contains(ls_pdu_router_id)) {
-                    routerList.add(ls_pdu_router_id);
+                if (!nodeList.contains(ls_pdu_router_id)) {
+                    nodeList.add(ls_pdu_router_id);
                     Node node = new Node(ls_pdu_router_id);
                     graph.addNode(node);
                 }
