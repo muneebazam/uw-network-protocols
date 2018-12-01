@@ -244,7 +244,7 @@ class Router {
         // Send LS_PDU on all direct links we receive a HELLO_PDU from
         for (int i = 0; i < nbr_routers; i++) {
             byte[] hello_pdu_buffer = new byte[4096];
-            hello_pdu_pkt = new DatagramPacket(hello_pdu_buffer, hello_pdu_buffer.length);
+            DatagramPacket hello_pdu_pkt = new DatagramPacket(hello_pdu_buffer, hello_pdu_buffer.length);
             socket.receive(hello_pdu_pkt);
             ByteBuffer hello_pdu_in = ByteBuffer.wrap(hello_pdu_pkt.getData()).order(ByteOrder.LITTLE_ENDIAN);
             int recv_router_id = (int) hello_pdu_in.getInt(0);
