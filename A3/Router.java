@@ -97,13 +97,13 @@ class Router {
     static int nse_port;
     static int router_port;
     static String nse_host;
-    // change this to an array so we can loop through it in print
     static int num_links[] = new int[NUM_ROUTERS];
     static HashMap<Integer, Tuple> topology = new HashMap<Integer, Tuple>();
     static ArrayList matched = new ArrayList();
     static ArrayList hello_acks = new ArrayList();
     static ArrayList nodeList = new ArrayList();
     static Graph graph = new Graph();
+    static PrintWriter log;
 
     public static void printRIB(Graph graph) {
         log.println("Printing Routing Information Base (RIB):");
@@ -201,8 +201,8 @@ class Router {
             router_port = Integer.valueOf(args[3]);
         }
 
-        // Create log file for this router
-        PrintWriter log = new PrintWriter("router" + router_id + ".log", true);
+        // setup log
+        log = new PrintWriter("router" + router_id + ".log");
 
         // Send INIT and receive CIRCUIT_DB from Emulator 
         int[] init_data = {router_id};
@@ -314,6 +314,7 @@ class Router {
                     }
                 }  
             }
+            log.flush();
         }
     }
 }
