@@ -247,12 +247,9 @@ class Router {
             DatagramPacket hello_pdu_in = new DatagramPacket(hello_pdu_buffer, hello_pdu_buffer.length);
             socket.receive(hello_pdu_in);
             ByteBuffer ls_pdu = ByteBuffer.wrap(hello_pdu_in.getData()).order(ByteOrder.LITTLE_ENDIAN);
-
             int recv_router_id = (int) ls_pdu.getInt(0);
             int recv_link_id = (int) ls_pdu.getInt(4);
             hello_acks.add(recv_router_id);
-
-            System.out.println("Recieved a HELLO_PDU from router " + recv_router_id + " through link " + recv_link_id + "\n");
             
             for (int j = 0; j < nbr_routers; j++) {
                 // send LS_PDU each time
