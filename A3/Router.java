@@ -201,7 +201,7 @@ class Router {
         try {
             DatagramSocket socket = new DatagramSocket(router_port);
         } catch (Exception e) {
-            System.out.println("Port " + router_port + " is already in use, exiting program.")
+            System.out.println("Port " + router_port + " is already in use, exiting program.");
             exit(1);
         }
         InetAddress clientIP = InetAddress.getByName(nse_host);
