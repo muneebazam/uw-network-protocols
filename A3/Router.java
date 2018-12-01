@@ -107,14 +107,13 @@ class Router {
     static ArrayList nodeList = new ArrayList();
     static Graph graph = new Graph();
 
-    public static void printGraph(Graph graph) {
+    public static void printRIB(Graph graph) {
         for (Node n : graph.nodes) {
-            System.out.println("Node: " + n.id);
-            System.out.print("Adjacent Nodes:");
-
-            for (Map.Entry<Node, Integer> neighbor: n.adjacentNodes.entrySet()) {
-                Node node = neighbor.getKey();
-                System.out.print(" " + node.id);
+            System.out.print("NODE: " + n.id + ", PATH: ");
+            List<Node> shortestPathList = n.shortestPath;
+            for (int i = 0; i < shortestPathList.size(); i++) {
+                Node tmp = shortestPathList.get(i);
+                System.out.print(" " + tmp.id);
             }
             System.out.print("\n");
         }
@@ -276,19 +275,9 @@ class Router {
             String str_key = "" + ls_pdu_router_id + ls_pdu_link_id + ls_pdu_link_cost;
             int key = Integer.parseInt(str_key);
             if (topology.containsKey(key) || !hello_acks.contains(ls_pdu_sender)) {
-                printTopology(topology);
                 graph = Graph.dijkstra(graph, source_node);
-                System.out.println("ABOUT TO PRINT THE RIB TABLE RIGHT HERE FAM");
-                for (Node n : graph.nodes) {
-                    System.out.print("NODE: " + n.id + ", PATH: ");
-                    List<Node> shortestPathList = n.shortestPath;
-                    for (int i = 0; i < shortestPathList.size(); i++) {
-                        Node tmp = shortestPathList.get(i);
-                        System.out.print(" " + tmp.id);
-                    }
-                    System.out.print("\n");
-                }
-                printGraph(graph);
+                printTopology(topology);
+                printRIB(graph);
             } else {
                 if (!nodeList.contains(ls_pdu_router_id)) {
                     nodeList.add(ls_pdu_router_id);
