@@ -1,4 +1,5 @@
 import java.net.*;
+import java.util.*;
 import java.io.PrintWriter;
 import java.io.BufferedReader;
 import java.io.DataOutputStream;
@@ -6,44 +7,20 @@ import java.io.DataInputStream;
 import java.io.InputStreamReader;
 import java.nio.ByteBuffer;
 import java.nio.ByteOrder;
-import java.util.HashMap;
-import java.lang.IndexOutOfBoundsException;
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.HashSet;
-import java.util.Map;
-import java.util.Iterator;
-import java.util.Set;
-import java.util.List;
-import java.util.LinkedList;
-
-/*
-    Perform Dijkstra on every iteration
-    - convert topolgy hashMap to adjacency lists
-    - Copy implementation of Dijkstra algorithm
-    - Modify algorithm to support INF's
-    - Appropriate data structure to hold RIB
-    - Print RIB helper function
-
-*/
 
 // ADD CHECKS FOR BIND EXCEPTION OR BETTER ERROR MESSAGING 
 
 class Node {
      
     public int id;
-     
     public List<Node> shortestPath = new LinkedList<>();
-     
     public Integer distance = Integer.MAX_VALUE;
-     
     public Map<Node, Integer> adjacentNodes = new HashMap<>();
- 
     public void addDestination(Node destination, int distance) {
         adjacentNodes.put(destination, distance);
     }
   
-    public Node(int id) {
+    Node(int id) {
         this.id = id;
     }
 }
@@ -51,7 +28,6 @@ class Node {
 class Graph {
  
     public Set<Node> nodes = new HashSet<>();
-     
     public void addNode(Node node) {
         nodes.add(node);
     }
@@ -81,10 +57,8 @@ class Graph {
  
     public static Graph calculateShortestPathFromSource(Graph graph, Node source) {
         source.distance = 0;
- 
         Set<Node> settledNodes = new HashSet<>();
         Set<Node> unsettledNodes = new HashSet<>();
- 
         unsettledNodes.add(source);
  
         while (unsettledNodes.size() != 0) {
@@ -120,18 +94,13 @@ class Tuple {
 
 class Router {
 
-    static final int NBR_ROUTER = 5;
+    static final int NUM_ROUTERS = 5;
     static int router_id;    
     static int nse_port;
     static int router_port;
     static String nse_host;
     // change this to an array so we can loop through it in print
-    static int router1_num_links = 0;
-    static int router2_num_links = 0;
-    static int router3_num_links = 0;
-    static int router4_num_links = 0;
-    static int router5_num_links = 0;
-    static int total_links = 0;
+    static int num_links = new int[NUM_ROUTERS];
     static HashMap<Integer, Tuple> topology = new HashMap<Integer, Tuple>();
     static ArrayList matched = new ArrayList();
 
@@ -149,47 +118,16 @@ class Router {
     }
 
     public static void printTopology(HashMap<Integer, Tuple> topology) {
-        System.out.println("R" + router_id + " -> R1 nbr link " + router1_num_links);
-        System.out.println("R" + router_id + " -> R2 nbr link " + router2_num_links);
-        System.out.println("R" + router_id + " -> R3 nbr link " + router3_num_links);
-        System.out.println("R" + router_id + " -> R4 nbr link " + router4_num_links);
-        System.out.println("R" + router_id + " -> R5 nbr link " + router5_num_links);
-
-        Set set = topology.entrySet();
-        Iterator iterator = set.iterator();
-        while(iterator.hasNext()) {
-            Map.Entry entry = (Map.Entry)iterator.next();
-            System.out.print("R" + router_id + " -> ");
-            Tuple temp = (Tuple) entry.getValue();
-            System.out.println("R" + temp.router_id + " link " + temp.link_id + " cost " + temp.link_cost);
+        for (int i = 0; i < NUM_ROUTERS; i++) {
+            System.out.println("R" + router_id + " -> R" + (i + 1) + " nbr link " + num_links[i]);
+        }
+        Iterator iter = topology.entrySet().iterator();
+        while (iter.hasNext()) {
+            Map.Entry entry = (Map.Entry) iter.next();
+            Tuple tuple = (Tuple) entry.getValue();
+            System.out.println("R" + router_id + " -> R" + tuple.router_id + " link " + tuple.link_id + " cost " + tuple.link_cost);
         }
     }
-
-    public static void updateNumLinks(int router_id) {
-        total_links += 1;
-        switch(router_id) {
-            case 1: 
-                router1_num_links += 1;
-                break;
-            case 2:
-                router2_num_links += 1;
-                break;
-            case 3:
-                router3_num_links += 1;
-                break;
-            case 4:
-                router4_num_links += 1;
-                break;
-            case 5:
-                router5_num_links += 1;
-                break;
-            default:
-                break;
-        }
-        return;
-    }
-
-    // loop through all links 
 
     public static void findDestinations(Graph graph, HashMap<Integer, Tuple> topology) {
         for (int i = 0; i < topology.size(); i++) {
@@ -315,7 +253,7 @@ class Router {
             String str_key = "" + router_id + link_ids[i] + link_costs[i];
             int key = Integer.parseInt(str_key);
             topology.put(key, temp);
-            updateNumLinks(router_id);
+            num_links[router_id - 1] += 1;
             System.out.println("The link id is " + link_ids[i] + " and its cost is " + link_costs[i] + "\n");
         }
 
@@ -405,7 +343,7 @@ class Router {
                     graph.addNode(node);
                 }
                 topology.put(key, temp);
-                updateNumLinks(ls_pdu_router_id);
+                num_links[ls_pdu_router_id - 1] += 1;
                 findDestinations(graph, topology);
                 for (int i = 0; i < link_ids.length; i++) {
                     if ((int) link_ids[i] == ls_pdu_via) {
