@@ -104,6 +104,8 @@ class Router {
     static HashMap<Integer, Tuple> topology = new HashMap<Integer, Tuple>();
     static ArrayList matched = new ArrayList();
     static ArrayList hello_acks = new ArrayList();
+    static ArrayList nodeList = new ArrayList();
+    static Graph graph = new Graph();
 
     public static void printGraph(Graph graph) {
         for (Node n : graph.nodes) {
@@ -233,9 +235,6 @@ class Router {
             DatagramPacket hello_pdu_pkt = new DatagramPacket(hello_pdu_bytes, hello_pdu_bytes.length, clientIP, nse_port);
             socket.send(hello_pdu_pkt);
         }
-
-        Graph graph = new Graph();
-        ArrayList nodeList = new ArrayList();
 
         Node source_node = new Node(router_id);
         graph.addNode(source_node);
