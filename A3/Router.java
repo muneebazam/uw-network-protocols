@@ -100,7 +100,7 @@ class Router {
     static int router_port;
     static String nse_host;
     // change this to an array so we can loop through it in print
-    static int num_links = new int[NUM_ROUTERS];
+    static int num_links[] = new int[NUM_ROUTERS];
     static HashMap<Integer, Tuple> topology = new HashMap<Integer, Tuple>();
     static ArrayList matched = new ArrayList();
 
