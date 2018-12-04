@@ -8,12 +8,19 @@ import java.io.InputStreamReader;
 import java.nio.ByteBuffer;
 import java.nio.ByteOrder;
 
+/* 
+ * CS456 Networks Shortest Path Routing (OSPF)
+ * Muneeb Azam (20630292)
+ * December 3 2018
+ */
+
+// Each router is a struct of type Node
 class Node {
      
     public int id;
-    public List<Node> shortestPath = new LinkedList<>();
-    public Integer distance = Integer.MAX_VALUE;
-    public Map<Node, Integer> adjacentNodes = new HashMap<>();
+    public List<Node> shortestPath = new LinkedList<>(); // will store shortest path from s to this node
+    public Integer distance = Integer.MAX_VALUE; 
+    public Map<Node, Integer> adjacentNodes = new HashMap<>(); // stores its direct neighbours
     public void addDestination(Node destination, int distance) {
         adjacentNodes.put(destination, distance);
     }
@@ -23,6 +30,7 @@ class Node {
     }
 }
 
+// network represented as a Graph 
 class Graph {
  
     public Set<Node> nodes = new HashSet<>();
@@ -30,6 +38,7 @@ class Graph {
         nodes.add(node);
     }
 
+    // Takes a set of nodes and returns the closest
     public static Node getLowestDistanceNode(Set<Node> unsettledNodes) {
         Node lowestDistanceNode = null;
         int lowestDistance = Integer.MAX_VALUE;
@@ -43,6 +52,7 @@ class Graph {
         return lowestDistanceNode;
     }
 
+    // calculates the minimum distance between two Nodes
     public static void calculateMinimumDistance(Node evaluationNode, Integer edgeWeigh, Node sourceNode) {
         Integer sourceDistance = sourceNode.distance;
         if (sourceDistance + edgeWeigh < evaluationNode.distance) {
@@ -53,6 +63,7 @@ class Graph {
         }
     }
  
+    // Dijkstra algorthim to update routing information base
     public static Graph dijkstra(Graph graph, Node source) {
         source.distance = 0;
         Set<Node> settledNodes = new HashSet<>();
@@ -77,6 +88,9 @@ class Graph {
     }
 }
 
+// Topology is comprised of tuples (router_id, link_id, link_cost)
+// We test packets against our topology (HashMap<Integer, Tuple>) to determine
+// if we have already received this packet
 class Tuple {
 
     public int router_id;
@@ -90,6 +104,7 @@ class Tuple {
     }
 }
 
+// Router class
 class Router {
 
     static final int NUM_ROUTERS = 5;
@@ -98,13 +113,14 @@ class Router {
     static int router_port;
     static String nse_host;
     static int num_links[] = new int[NUM_ROUTERS];
-    static HashMap<Integer, Tuple> topology = new HashMap<Integer, Tuple>();
-    static ArrayList matched = new ArrayList();
-    static ArrayList hello_acks = new ArrayList();
-    static ArrayList nodeList = new ArrayList();
+    static HashMap<Integer, Tuple> topology = new HashMap<Integer, Tuple>(); // Link-State Database struct
+    static ArrayList matched = new ArrayList(); // links for which we received ack from both ends
+    static ArrayList hello_acks = new ArrayList(); // routers we've receieved hello's from
+    static ArrayList nodeList = new ArrayList(); // router_id's
     static Graph graph = new Graph();
     static PrintWriter log;
 
+    // Prints a graphs corresponding Routing Info Base to log
     public static void printRIB(Graph graph) {
         log.println("Printing Routing Information Base (RIB):");
         log.println("R" + router_id + " -> LOCAL, 0");
@@ -125,6 +141,7 @@ class Router {
         log.print("\n");
     }
 
+    // Prints the networks topology from the given HashMap
     public static void printTopology(HashMap<Integer, Tuple> topology) {
         log.println("Printing Link State Database:");
         for (int i = 0; i < NUM_ROUTERS; i++) {
@@ -139,7 +156,10 @@ class Router {
         log.print("\n");
     }
 
+    // Finds which routers we can route to based on the current Topology and Graph status 
     public static void findDestinations(Graph graph, HashMap<Integer, Tuple> topology) {
+        // loops through the entire topology and updates matched list
+        // with routers we can route to based on current topology
         for (int i = 0; i < topology.size(); i++) {
             ArrayList checked = new ArrayList();
             Iterator iterator = topology.entrySet().iterator();
@@ -172,6 +192,7 @@ class Router {
         }
     }
 
+    // converts an int[] to byte[]
     public static byte[] convertIntegersToBytes(int[] nums) {
         if (nums != null) {
             byte[] outputBytes = new byte[nums.length * 4];
@@ -187,6 +208,7 @@ class Router {
         }
     }
 
+    // main
     public static void main(String args[]) throws Exception{
 
         // Handle command line arguments
@@ -204,29 +226,30 @@ class Router {
         // setup log
         log = new PrintWriter("router" + router_id + ".log");
 
-        // Send INIT and receive CIRCUIT_DB from Emulator 
+        // Send INIT to Emulator
         int[] init_data = {router_id};
         byte[] init_data_bytes = convertIntegersToBytes(init_data);
         DatagramSocket socket = new DatagramSocket(router_port);
         InetAddress clientIP = InetAddress.getByName(nse_host);
         DatagramPacket init_pkt = new DatagramPacket(init_data_bytes, init_data_bytes.length, clientIP, nse_port);
-        socket.send(init_pkt);
         log.println("R" + router_id + " sends an INIT PDU: router_id " + router_id + "\n");
+        socket.send(init_pkt);
+
+        // Receive CIRCUIT_DB from Emulator
         byte[] circuit_db_bytes = new byte[4096];
         DatagramPacket circuit_db_in = new DatagramPacket(circuit_db_bytes, circuit_db_bytes.length);
         socket.receive(circuit_db_in);
         ByteBuffer circuit_db = ByteBuffer.wrap(circuit_db_in.getData()).order(ByteOrder.LITTLE_ENDIAN);
 
-        // create arrays to represent direct links to this router and their respective costs 
-        int offset = 0;
-        int nbr_routers = (int) circuit_db.getInt(offset);
+        // Create arrays to represent direct links to this router and their respective costs 
+        int nbr_routers = (int) circuit_db.getInt(0);
         int link_ids[] = new int[nbr_routers];
         int link_costs[] = new int[nbr_routers];
-        offset += 4;
         log.println("R" + router_id + " receives a CIRCUIT DB: nbr_links " + nbr_routers + "\n");
         log.flush();
 
-        // update above arrays and start building link state database (topology)
+        // Populate above arrays and start building topology
+        int offset = 4;
         for (int i = 0; i < nbr_routers; i++) {
             link_ids[i] = (int) circuit_db.getInt(offset);
             offset += 4;
@@ -248,22 +271,27 @@ class Router {
             log.flush();
         }
 
-        // Add this router (node) to the graph struct
+        // Add this router (Node) to the graph struct
         Node source_node = new Node(router_id);
         graph.addNode(source_node);
         nodeList.add(router_id);
 
         // Send an LS_PDU on all links we've received a HELLO_PDU from
         for (int i = 0; i < nbr_routers; i++) {
+
+            // Receives a HELLO_PDU
             byte[] hello_pdu_buffer = new byte[4096];
             DatagramPacket hello_pdu_in = new DatagramPacket(hello_pdu_buffer, hello_pdu_buffer.length);
             socket.receive(hello_pdu_in);
             ByteBuffer ls_pdu = ByteBuffer.wrap(hello_pdu_in.getData()).order(ByteOrder.LITTLE_ENDIAN);
+
+            // Extract data and add router to our list
             int recv_router_id = (int) ls_pdu.getInt(0);
             int recv_link_id = (int) ls_pdu.getInt(4);
             hello_acks.add(recv_router_id);
             log.println("R" + router_id + " receives a HELLO PDU: router_id " + recv_router_id + ", link_id " + recv_link_id + "\n");
 
+            // send set of LS_PDU's describing our current topology 
             for (int j = 0; j < nbr_routers; j++) {
                 log.println("R" + router_id + " sends an LS PDU: sender " + router_id + ", router_id " + router_id + ", link_id " + link_ids[j] + ", link_cost " + link_costs[j] + ", via " + recv_link_id + "\n");
                 int[] ls_pdu_data = {router_id, router_id, link_ids[j], link_costs[j], recv_link_id};
@@ -274,10 +302,15 @@ class Router {
             log.flush();
         }
 
+        // infinite
         while (true) {
+
+            // Receive an LS_PDU
             byte[] ls_pdu_bytes = new byte[4096];
             DatagramPacket ls_pdu_in = new DatagramPacket(ls_pdu_bytes, ls_pdu_bytes.length);
             socket.receive(ls_pdu_in);
+
+            // Extract data 
             ByteBuffer recv_ls_pdu = ByteBuffer.wrap(ls_pdu_in.getData()).order(ByteOrder.LITTLE_ENDIAN);
             int ls_pdu_sender = (int) recv_ls_pdu.getInt(0);
             int ls_pdu_router_id = (int) recv_ls_pdu.getInt(4);
@@ -286,27 +319,32 @@ class Router {
             int ls_pdu_via = (int) recv_ls_pdu.getInt(16);
             log.println("R" + router_id + " receives an LS PDU: sender " + ls_pdu_sender + ", router_id " + ls_pdu_router_id + ", link_id " + ls_pdu_link_id + ", link_cost " + ls_pdu_link_cost + ", via " + ls_pdu_via + "\n");
 
-
+            // create a tuple to represent LS_PDU 
+            // We concatenate these 3 fields together to form an integer key which
+            // acts as the lookup in our topology allowing us an O(1) lookup
             Tuple temp = new Tuple(ls_pdu_router_id, ls_pdu_link_id, ls_pdu_link_cost);
             String str_key = "" + ls_pdu_router_id + ls_pdu_link_id + ls_pdu_link_cost;
             int key = Integer.parseInt(str_key);
 
-            // if we already receieved this LS_PDU or did not recieve a HELLO_PDU we ignore the packet
+            // if key is in our topology we have recieved this packet so we will discard
             if (topology.containsKey(key) || !hello_acks.contains(ls_pdu_sender)) {
                 continue;
+
             } else {
+                // if this is the first packet from this router we have discovered
+                // a new router and so we add it to our graph and topology
                 topology.put(key, temp);
                 num_links[ls_pdu_router_id - 1] += 1;
-
-                // if this is the first packet from this router we have
-                // discovered a new router and add it to our graph struct
                 if (!nodeList.contains(ls_pdu_router_id)) {
                     nodeList.add(ls_pdu_router_id);
                     Node node = new Node(ls_pdu_router_id);
                     graph.addNode(node);
                 }
+
+                // update our reachable destinations and run shortest path
                 findDestinations(graph, topology);
                 graph = Graph.dijkstra(graph, source_node);
+
                 // Propogate LS_PDU through network (Except for link we recieved on)
                 for (int i = 0; i < link_ids.length; i++) {
                     if ((int) link_ids[i] == ls_pdu_via) {
@@ -319,6 +357,9 @@ class Router {
                         socket.send(ls_pdu_pkt_propogate);
                     }
                 }
+
+                // If we have reached this point our topology
+                // and graph were updated, log a new version
                 printTopology(topology);
                 printRIB(graph); 
                 log.print("\n");
