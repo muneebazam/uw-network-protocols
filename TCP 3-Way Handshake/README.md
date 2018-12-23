@@ -1,34 +1,30 @@
 TCP 3-Way Handshake
 ===================
 
+About
+-----
+
+This program features a simple client server interaction in which the client will send requests to the server to reverse strings over the network using sockets. 
+
+It involves a two stage communication process, a negotiation (handshake) stage in which the client and server establish a connection, followed by a transaction stge in which the actual data (string) is transferred. 
+
 
 Compiling and Setup
 -------------------
 
-The client and server applications can both be compiled by running the 
-'make' command. 
+The client and server applications can both be compiled via the 'make' command. 
 
-To start the client application, run the client script while passing the server address, port, request code and message.
+To start the client application, run the client script passing the server address, port, request code and message as command line parameters.
 
 E.g. ./client.sh <server_address> <server_port> <request_code> <message string>
 
-To start the server application, run the server script while passing the request code.
+To start the server application, run the server script, passing the request code as command line parameters.
 
 E.g. ./server.sh <request_code>
 
-* Make sure to start the server script before starting the client script
+* Make sure to start the server program before starting the client program
 
-Machines
---------
-
-The client and server applications can successfully communicate with each other if run on two
-diferrent linux.student.cs.uwaterloo.ca machines and if on the same machine, as well.
-
-When running on the same machine: pass 'localhost' or '127.0.0.1' as the server address
-
-When running on different machines: use 'ifconfig' to find the machines public IP and use that as server address
-
-General Flow
+Program Flow
 ------------
 
 1. Server will print a port associated with a UDP socket for negotiation
