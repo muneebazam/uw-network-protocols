@@ -1,9 +1,5 @@
-CS456 Networks
-==============
+Socket Programming
+==================
 
-Implementations of various networking protocols and features.
-
-- TCP Handshake
-- Go-Back-N Protocol
-- OSPF Routing
+Implementations of various networking protocols and algorithms as covered in CS456 (Computer Networks) at the University of Waterloo.
 
