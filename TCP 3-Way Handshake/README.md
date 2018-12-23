@@ -1,24 +1,22 @@
-Networks Assignment 1 - Socket Programming
-==========================================
+TCP 3-Way Handshake
+===================
+
 
 Compiling and Setup
 -------------------
 
-The client and server applications that I have created can both be compiled by running the 
+The client and server applications can both be compiled by running the 
 'make' command. 
 
-To start the client application simply run the client script by typing ./client.sh in the 
-command line and passing the server address, port, request code and message.
+To start the client application, run the client script while passing the server address, port, request code and message.
 
 E.g. ./client.sh <server_address> <server_port> <request_code> <message string>
 
-To start the server application simply run the server script by tyiping ./server.sh in
-the command line and passing the request code.
+To start the server application, run the server script while passing the request code.
 
 E.g. ./server.sh <request_code>
 
-* Make sure to start the server script before starting the client script or else the client 
-will not be able to communicate with the server
+* Make sure to start the server script before starting the client script
 
 Machines
 --------
