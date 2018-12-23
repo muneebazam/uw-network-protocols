@@ -13,8 +13,7 @@ To achieve this, the sender sends packets to an emulator which will randomly dis
 Compiling and Setup
 -------------------
 
-The sender and receiver applications that I have created can both be compiled by running the 
-'make' command. 
+The sender and receiver applications can both be compiled via the 'make' command. 
 
 To start the sender application simply run the sender script by typing ./sender.sh in the 
 command line and passing the receiver address, port, request code and message.
@@ -35,15 +34,6 @@ E.g. ./receiver.sh <hostname for the network emulator>
 * Make sure to start the receiver script before starting the sender script or else the sender 
 will not be able to communicate with the receiver
 
-Machines
---------
-
-The sender and receiver applications can successfully communicate with each other if run on two
-diferrent linux.student.cs.uwaterloo.ca machines and if on the same machine, as well.
-
-When running on the same machine: pass 'localhost' or '127.0.0.1' as the receiver address
-
-When running on different machines: use 'ifconfig' to find the machines public IP and use that as receiver address
 
 Example Execution
 -----------------
