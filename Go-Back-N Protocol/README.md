@@ -10,29 +10,23 @@ To achieve this, the sender sends packets to an emulator which will randomly dis
 
 
 
+
 Compiling and Setup
 -------------------
 
+The emulator is an C executable 
+
 The sender and receiver applications can both be compiled via the 'make' command. 
 
-To start the sender application simply run the sender script by typing ./sender.sh in the 
-command line and passing the receiver address, port, request code and message.
+To start the sender program, run the sender script (sender.sh), passing the emulator address, port, request code and message on the command line.
 
-E.g. ./sender.sh <host address of the network emulator>
-				 <UDP port number used by the emulator to receive data from the sender>
-				 <UDP port number used by the sender to receive ACKs from the emulator>
-				 <name of the file to be transferred>
+E.g. ./sender.sh <emulator host> <emulator port> <sender port> <input file name>
 
-To start the receiver application simply run the receiver script by tyiping ./receiver.sh in
-the command line and passing the request code.
+To start the receiver application, run the receiver script (receiver.sh), passing the request code on the command line.
 
-E.g. ./receiver.sh <hostname for the network emulator>
-				   <UDP port number used by the link emulator to receive ACKs from the receiver>
-				   <UDP port number used by the receiver to receive data from the emulator>
-				   <name of the file into which the received data is written>
+E.g. ./receiver.sh <emulator host> <emulator port> <receiver port> <output file name>
 
-* Make sure to start the receiver script before starting the sender script or else the sender 
-will not be able to communicate with the receiver
+* Make sure to start the receiver before starting the sender
 
 
 Example Execution
