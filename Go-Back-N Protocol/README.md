@@ -22,8 +22,6 @@ To start the sender program, run the send script (sender.sh), passing the emulat
 
 E.g. ./sender.sh <emulator host> <emulator sender port> <sender port> <input file name>
   
-  E.g. ./client.sh <server_address> <server_port> <request_code> <message string>
-
 To start the receiver application, run the receiver script (receiver.sh), passing the request code on the command line.
 
 E.g. ./receiver.sh <emulator host> <emulator receive port> <receiver port> <output file name>
