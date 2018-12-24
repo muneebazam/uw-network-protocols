@@ -9,7 +9,7 @@ This program contains a java implemententation for the Open Shortest Path First 
 
 To achieve this, a Network State Emulator (NSE) with the following hardcoded circuit database:
 
-![](images/table%20topology.png)
+![](topology.png)
 
 
 Compiling and Setup
