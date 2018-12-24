@@ -22,7 +22,7 @@ To start the server application, run the server script, passing the request code
 
 *E.g. ./server.sh <request_code>*
 
-* Make sure to start the server program before starting the client program
+**Make sure to start the server program before starting the client program**
 
 Program Flow
 ------------
