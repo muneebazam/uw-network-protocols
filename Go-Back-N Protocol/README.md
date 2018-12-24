@@ -14,7 +14,7 @@ Compiling and Setup
 
 The emulator is an executable file which should be run before both sender and receiver programs. When running the emulator, pass the emulator send port, receiver host, receiver port, emulator recieve port, sender host, sender port, max delay (ms), discard probability and verbose mode flag as command line parameters in that order.
 
-E.g. ./nEmulator-linux386 
+E.g. ./nEmulator-linux386 <emulator send port>
 
 The sender and receiver applications can both be compiled via the 'make' command. 
 
