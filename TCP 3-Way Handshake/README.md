@@ -14,9 +14,9 @@ Compiling and Setup
 
 The client and server applications can both be compiled via the 'make' command. 
 
-To start the client application, run the client script passing the server address, port, request code and message as command line parameters.
+To start the client application, run the client script passing the server address, server port, request code and message as command line parameters.
 
-E.g. ./client.sh <server_address> <server_port> <request_code> <message string>
+E.g. ./client.sh <server_address> <server_port> <request_code> <message_string>
 
 To start the server application, run the server script, passing the request code as command line parameters.
 
