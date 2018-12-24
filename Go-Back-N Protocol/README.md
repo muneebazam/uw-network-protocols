@@ -26,7 +26,7 @@ To start the receiver application, run the receiver program passing the emulator
 
 *E.g. java Receiver <emulator_host> <emulator_receive_port> <receiver_port> <output_file>*
 
-* Make sure to start the receiver before starting the sender
+**- Make sure to start the receiver before starting the sender**
 
 
 Example Execution
