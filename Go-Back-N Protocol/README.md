@@ -56,6 +56,6 @@ Program Flow
 
 8. Sender will write all packets sent and acks recieved to log files seqnum.log & ack.log respectively and exit
 
-9 Receiver will write all packet sequence numbers it received to arrival.log and exit
+9. Receiver will write all packet sequence numbers it received to arrival.log and exit
 
 
