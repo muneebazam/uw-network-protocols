@@ -7,7 +7,7 @@ About
 This program contains a java implemententation for the Open Shortest Path First routing algorithm (OSPF). 
 *For more information on link-state routing algorithms see https://searchnetworking.techtarget.com/definition/OSPF-Open-Shortest-Path-First*
 
-To achieve this, a Network State Emulator (NSE) with the following hardcoded circuit database:
+To achieve this, our individual 5 router programs will conect to a provided Network State Emulator (NSE) program with the following hardcoded 5-router circuit database:
 
 ![](topology.png)
 
