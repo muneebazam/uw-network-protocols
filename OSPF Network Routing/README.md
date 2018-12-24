@@ -1,5 +1,16 @@
-Networks Assignment 3 - Shortest Path Routing
-=============================================
+Open Shortest Path Routing
+==========================
+
+About
+-----
+
+This program contains a java implemententation for the Open Shortest Path First routing algorithm (OSPF). 
+*For more information on link-state routing algorithms see https://searchnetworking.techtarget.com/definition/OSPF-Open-Shortest-Path-First*
+
+To achieve this, a Network State Emulator (NSE) with the following hardcoded circuit database:
+
+![](images/table%20topology.png)
+
 
 Compiling and Setup
 -------------------
