@@ -4,8 +4,10 @@ Open Shortest Path Routing
 About
 -----
 
-This program contains a java implemententation for the Open Shortest Path First link-state routing algorithm (OSPF). 
+This program contains a java implemententation for the Open Shortest Path First routing algorithm (OSPF). 
 *For more information on link-state routing algorithms see https://searchnetworking.techtarget.com/definition/OSPF-Open-Shortest-Path-First*
+
+The program 
 
 
 Compiling and Setup
