@@ -46,7 +46,7 @@ Program Flow
 
 3. Receiver will receive packets and write packets with correct sequence number to the output file
 
-4. Receiver will drop unwanted packets and always send a cumulative acknolwedgement back to sender (Go-Back-N)
+4. Receiver will drop unwanted packets and always send a cumulative acknolwedgement back to sender *(Go-Back-N)*
 
 5. Sender will retransmit any packets for which timer expires or if wrong ACK has been received
 
@@ -54,8 +54,8 @@ Program Flow
 
 7. Receiver will send an EOT acknowledgement back to sender
 
-8. Sender will write all packets sent and acks recieved to log files seqnum.log & ack.log respectively and exit
+8. Sender will write all packets sent and acks recieved to log files *seqnum.log* & *ack.log* respectively and exit
 
-9. Receiver will write all packet sequence numbers it received to arrival.log and exit
+9. Receiver will write all packet sequence numbers it received to *arrival.log* and exit
 
 
