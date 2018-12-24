@@ -1,5 +1,10 @@
-Networks Assignment 3 - Shortest Path Routing
-=============================================
+Shortest Path Routing
+=====================
+
+About
+-----
+
+
 
 Compiling and Setup
 -------------------
