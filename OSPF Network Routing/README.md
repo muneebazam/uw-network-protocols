@@ -25,59 +25,31 @@ The router application can be compiled via the 'make' command. To start the appl
 
 *E.g. java Router <router_id> <emulator_host> <emulator_port> <router_port>*
 
-
-Example Execution
------------------
-
-1.  
-
-Compiling and Setup
--------------------
-
-The emulator is an executable file which should be run before both sender and receiver programs. When running the emulator, pass the emulator send port, receiver host, receiver port, emulator recieve port, sender host, sender port, max delay (ms), discard probability [0-1], and verbose mode flag as command line parameters in that order.
-
-*E.g. ./nEmulator-linux386 <emulator_send_port> <receiver_host> <receiver_port> <emulator_receive_port> <sender_host> <sender_port> <max_delay> <discard_probability> <verbose_mode_flag>* 
-
-The sender and receiver applications can both be compiled via the 'make' command. 
-
-To start the sender program, run the sender program passing the emulator address, emulator send port, sender port and input file as command line parameters.
-
-*E.g. java Sender <emulator_host> <emulator_sender_port> <sender_port> <input_file>*
-  
-To start the receiver application, run the receiver program passing the emulator address, emulator receive port, receiver port and output file as command line parameters.
-
-*E.g. java Receiver <emulator_host> <emulator_receive_port> <receiver_port> <output_file>*
-
-**- Make sure to start the receiver before starting the sender**
+**- Make sure to start the emulator before starting the router programs**
 
 
 Example Execution
 -----------------
 
-1. ./nEmulator-linux386 9991 127.94.48.56 9994 9993 127.43.45.754 9992 1 0.2 1
-2. java Receiver 127.59.09.342 9993 9994 output.txt
-3. java Sender 127.59.09.342 9991 9992 input.txt
+1. ./nselinux386 127.94.48.56 9999
+2. java Router 1 127.59.09.342 9999 9991
+3. java Router 2 127.59.09.342 9999 9992
+4. java Router 3 127.59.09.342 9999 9993
+5. java Router 4 127.59.09.342 9999 9994
+6. java Router 5 127.59.09.342 9999 9995
 
 
 Program Flow
 ------------
 
-1. Sender will read in the input file and break it down into a list of packets (byte arrays)
+1. When a router comes online it sends an INIT packet to the emulator and receives a packet containing all links/edges connected to that specific router
 
-2. Sender will begin sending packets to the emulator up until window size has been reached
+2. This information is logged in the routers topology database (the routers overall picture of the network)
 
-3. Receiver will receive packets and write packets with correct sequence number to the output file
+3. Each router then sends a *HELLO* packet to its direct neighbors notifying them of its existence in the network.
 
-4. Receiver will drop unwanted packets and always send a cumulative acknolwedgement back to sender *(Go-Back-N)*
+4. In response to each *HELLO*, each router sends a set of *LS_PDU* packets indicating all its links with their associated costs.
 
-5. Sender will retransmit any packets for which timer expires or if wrong ACK has been received
+5. Whenever a router receives a new *LS_PDU* it updates its topology database and runs Dijkstra's shortest path algorithm to find the shortest paths to each router which it keeps in its Routing Information Base (RIB), after which it propogates that *LS_PDU* through the network. 
 
-6. Once all packets successfully transmitted, sender will send an EOT packet
-
-7. Receiver will send an EOT acknowledgement back to sender
-
-8. Sender will write all packets sent and acks recieved to log files *seqnum.log* & *ack.log* respectively and exit
-
-9. Receiver will write all packet sequence numbers it received to *arrival.log* and exit
-
-
+6. This process continues until there are no transient packets in the network at which point each router will have a complete list of links in the network and an accurate Routing Information Base with the lowest costs.
