@@ -17,7 +17,9 @@ Compiling and Setup
 
 The emulator is an executable file which should be run before the individual router programs. When running the emulator, pass the host address on which the router programs are running as well as a port number to communicate on.
 
-*E.g. ./nEmulator-linux386 <router_host_address> <emulator_port>* 
+*E.g. ./nselinux386 <router_host_address> <emulator_port>* 
+
+**Note: Unfortunately, the emulator was compiled in 32-bit architecture and therefore running on 64-bit architecture will require manually adding the i386 architecture. Details on the workaround can be found here: *https://superuser.com/questions/1076730/how-to-run-32-bit-app-in-recent-ubuntu-64-bit***
 
 The router application can be compiled via the 'make' command. To start the application run the java program while passing the router id, emulator host address, emulator port number and router port.
 
